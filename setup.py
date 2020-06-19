@@ -5,10 +5,10 @@ setup(
     version='0.2',
     packages=find_packages(),
     install_requires=[
-        'Click',
-        'requests',
-        'bs4',
-        'sqlalchemy'
+        'click>=7.1',
+        'requests>=2.23',
+        'bs4>=0.0.1',
+        'sqlalchemy>=1.3'
     ],
     entry_points={'console_scripts':'ebAlert=app.ebklalert:cli'}
 )
