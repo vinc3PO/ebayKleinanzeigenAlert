@@ -1,5 +1,5 @@
 # ebayKleinanzeigenAlert - (ebAlert)
-Small CLI program that will send you an a Telegram message new posts on the a specific link. 
+Small CLI program that will send you an a Telegram message for every new posts on the specific links of the Ebay Kleinanzeigen website. 
 
 ## Install
 * Hard code you telegram API and messageID on the the telegramclass.py file. 
