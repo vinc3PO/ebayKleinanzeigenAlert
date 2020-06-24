@@ -31,11 +31,11 @@ def getPost(link):
                            headers=customHeader)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
-        articles = soup.find_all(attrs={"class": "ad-listitem lazyload-item"})
-        items = [EbayItem(item) for item in articles]
-        return items
-    else:
-        return None
+        result = soup.find(attrs={"id": "srchrslt-adtable"})
+        if result:
+            articles = result.find_all(attrs={"class": "ad-listitem lazyload-item"})
+            items = [EbayItem(item) for item in articles]
+            return items
 
 
 if __name__ =="__main__":

@@ -12,7 +12,7 @@ def cli():
 @cli.command()
 def alert():
     links = [rows["link"] for rows in sql.getLinks()]
-    if links != []:
+    if links:
         for link in links:
             addPost(link, True)
     print("Success")
@@ -27,7 +27,7 @@ def Links(show, remove, clear, add, init):
     if show:
         links = [(rows["id"], rows["link"])for rows in sql.getLinks()]
         print("id     link")
-        if links != []:
+        if links:
             for id, link in links:
                 print("{0:<{1}}{2}".format(id, 8 - len(str(id)) ,link))
     elif remove:
@@ -42,7 +42,7 @@ def Links(show, remove, clear, add, init):
         print("Link and post added to the database")
     elif init:
         links = [rows["link"] for rows in sql.getLinks()]
-        if links != []:
+        if links:
             for link in links:
                 addPost(link)
         print("database initialised")
@@ -54,7 +54,7 @@ def addPost(link, toSend=False):
         if not sql.postExist(post.id):
             sql.addPost([post])
             if toSend:
-                telegram.sendMessage("{}\n\n{}\n\n{}".format(post.title, post.price, post.link))
+                telegram.sendMessage("{}\n\n{} ({})\n\n{}".format(post.title, post.price, post.city, post.link))
 
 
 if __name__ == "__main__":
