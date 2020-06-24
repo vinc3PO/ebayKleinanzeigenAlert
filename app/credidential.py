@@ -1,2 +1,2 @@
-TOKEN = ""
-CHAT_ID = ""
+TOKEN = "test"
+CHAT_ID = "test"
