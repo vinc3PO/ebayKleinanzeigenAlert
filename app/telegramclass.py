@@ -2,8 +2,8 @@ import requests
 try:
     from app.credential import TOKEN, CHAT_ID
 except ImportError:
-    TOKEN=""
-    CHAT_ID=""
+    TOKEN = ""
+    CHAT_ID = ""
 
 def sendMessage(message):
     send_text = """https://api.telegram.org/bot{}/sendMessage?chat_id={}
