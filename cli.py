@@ -1,6 +1,5 @@
 import app.ebklalert
 import click
-import sys
 
 @click.group()
 def cli():
