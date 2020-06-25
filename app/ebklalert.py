@@ -1,15 +1,9 @@
 import app.ebayclass as ebay
 import app.sqlmodel as sql
 import app.telegramclass as telegram
-import click
+import sys
 
 
-@click.group()
-def cli():
-    pass
-
-
-@cli.command()
 def alert():
     links = [rows["link"] for rows in sql.getLinks()]
     if links:
@@ -17,13 +11,7 @@ def alert():
             addPost(link, True)
     print("Success")
 
-@cli.command()
-@click.option("--show", is_flag=True)
-@click.option("--remove", help="link id. Remove link from database")
-@click.option("--clear", is_flag=True, help="Clear post database")
-@click.option("--add", help="add link to database and fetch posts")
-@click.option("--init", is_flag=True, help="initialise database after clearing")
-def Links(show, remove, clear, add, init):
+def links(show, remove, clear, add, init):
     if show:
         links = [(rows["id"], rows["link"])for rows in sql.getLinks()]
         print("id     link")
