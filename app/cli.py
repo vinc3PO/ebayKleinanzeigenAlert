@@ -1,5 +1,6 @@
 import app.ebklalert
 import click
+import sys
 
 @click.group()
 def cli():
@@ -22,4 +23,4 @@ def links(show, remove, clear, add, init):
 
 
 if __name__ == "__main__":
-    cli(['--help'])
+    cli(sys.argv[1:])
