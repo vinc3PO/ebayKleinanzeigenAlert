@@ -1,10 +1,10 @@
 # ebayKleinanzeigenAlert - (ebAlert)
 Small CLI program that will send you an a Telegram message for every new posts on the specific links of the Ebay Kleinanzeigen website. 
 
-No API required only URL the search.
+No API required - Only URL of the query.
 
 ## Install
-* Hard code you telegram API and messageID on the the telegramclass.py file. 
+* Hard code your telegram API key and messageID in the telegramclass.py file. 
 * Download and unzip
 * run ````pip install .  ````
 
@@ -19,4 +19,8 @@ No API required only URL the search.
 * telegram bot API
 * python 3
 * works on linux and windows
-* click, bs4 and sqlalchemy 
+* click, requests,bs4 and sqlalchemy 
+
+## Future Plans
+
+* add functionality to add link through telegram.
