@@ -1,12 +1,15 @@
-from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Date, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+try:
+    from sqlalchemy import create_engine
+    from sqlalchemy import Column, Integer, String
+    from sqlalchemy.ext.declarative import declarative_base
+    from sqlalchemy.orm import sessionmaker
+except ImportError:
+    print("SQLAlchemy should be install\npip install sqlalchemy")
 import sys
 import os
 
-from app.ebayclass import getPost
-FILELOCATION= os.path.join(os.path.expanduser("~"), "ebayklein.db")
+from ebAlert.ebayclass import getPost
+FILELOCATION = os.path.join(os.path.expanduser("~"), "ebayklein.db")
 engine = create_engine('sqlite:///{!s}'.format(FILELOCATION), echo=False)
 Base = declarative_base()
 

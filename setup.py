@@ -10,5 +10,5 @@ setup(
         'bs4>=0.0.1',
         'sqlalchemy>=1.3'
     ],
-    entry_points={'console_scripts':'ebAlert=app.cli:cli'}
+    entry_points={'console_scripts':'ebAlert=ebAlert'}
 )

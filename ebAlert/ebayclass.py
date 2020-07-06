@@ -1,5 +1,8 @@
 import requests
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    print('bs4 must be installed.\npip install bs4')
 
 
 class EbayItem:

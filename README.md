@@ -5,7 +5,7 @@ No API required - Only URL of the query.
 
 ## Install
 * Hard code your telegram API key and messageID in the telegramclass.py file. 
-* Download and unzip
+* Download or clone
 * run ````pip install .  ````
 
 ## Usage & Example
@@ -19,7 +19,7 @@ No API required - Only URL of the query.
 * telegram bot API
 * python 3
 * works on linux and windows
-* click, requests,bs4 and sqlalchemy 
+* click, requests, bs4 and sqlalchemy 
 
 ## Future Plans
 
