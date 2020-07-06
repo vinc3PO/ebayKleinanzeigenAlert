@@ -15,6 +15,9 @@ def cli():
 
 @cli.command(help="Fetch new post and send Telegram notification.")
 def start():
+    """
+    loop through the urls in the database and send message
+    """
     links = [rows["link"] for rows in sql.getLinks()]
     if links:
         for link in links:
@@ -29,6 +32,10 @@ def start():
 @click.option("-i", "--init", is_flag=True, help="Initialise database after clearing.")
 @click.option("-s", "--show", is_flag=True,help="Show all urls and corresponding id.")
 def links(show, remove, clear, add, init):
+    """
+    cli related to the links. Add, remove, clear, init and show
+    """
+    #TODO: Add verification if action worked.
     if show:
         links = [(rows["id"], rows["link"])for rows in sql.getLinks()]
         print("id     link")
@@ -54,6 +61,12 @@ def links(show, remove, clear, add, init):
 
 
 def addPost(link, toSend=False):
+    """
+    Function to fetch ebay posts, check the database and send telegram if new
+    :param link: string
+    :param toSend: boolean
+    :return: None
+    """
     posts = ebay.getPost(link)
     for post in posts:
         if not sql.postExist(post.id):
