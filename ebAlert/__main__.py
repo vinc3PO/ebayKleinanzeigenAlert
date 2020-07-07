@@ -2,6 +2,8 @@ import ebAlert.ebayclass as ebay
 import ebAlert.sqlmodel as sql
 import ebAlert.telegramclass as telegram
 import sys
+from random import randint
+from time import sleep
 try:
     import click
 except ImportError:
@@ -21,6 +23,7 @@ def start():
     links = [rows["link"] for rows in sql.getLinks()]
     if links:
         for link in links:
+            sleep(randint(0, 10))
             addPost(link, True)
     print("Success")
 
