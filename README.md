@@ -4,9 +4,12 @@ Small CLI program that will send you an a Telegram message for every new posts o
 No API required - Only URL of the query.
 
 ## Install
-* Hard code your telegram API key and messageID in the telegramclass.py file. 
-* Download or clone
-* run ````pip install .  ````
+* Download folder or clone
+* cd yourself to the main directory
+* Hard code your telegram API key and messageID in the telegramclass.py file.
+* Install or run straight from directory.
+  * install with ````pip install .  ````
+  * run with ````python -m ebAlert ````
 
 ## Usage & Example
 * ```ebAlert links [opts] ``` to show, add, remove links
@@ -14,12 +17,12 @@ No API required - Only URL of the query.
 
 
 * ```ebAlert links add "https://www.ebay...k0l9354r20"``` Assuming you just look through the web page while copy no notification will be send. 
+* Typically run as a cron job on an hourly basis.
 
 ## Requirements
-* telegram bot API
-* python 3
-* works on linux and windows
-* click, requests, bs4 and sqlalchemy 
+* A telegram bot API token and your personal conversation id
+* Python 3
+* click, requests, bs4 and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
 
 ## Future Plans
 
