@@ -4,7 +4,7 @@ try:
     from sqlalchemy.ext.declarative import declarative_base
     from sqlalchemy.orm import sessionmaker
 except ImportError:
-    print("SQLAlchemy should be install\npip install sqlalchemy")
+    print("SQLAlchemy should be installed\npip install sqlalchemy")
 import sys
 import os
 
