@@ -15,7 +15,6 @@ Base = declarative_base()
 
 
 class EbayPost(Base):
-
     __tablename__ = "ebay_post"
 
     id = Column(Integer, primary_key=True)
@@ -26,7 +25,6 @@ class EbayPost(Base):
 
 
 class EbayLink(Base):
-
     __tablename__ = "ebay_link"
 
     id = Column(Integer, primary_key=True)
