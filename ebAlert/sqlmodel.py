@@ -1,3 +1,8 @@
+from contextlib import contextmanager
+import logging
+import os
+from ebAlert.ebayclass import getPost
+
 try:
     from sqlalchemy import create_engine
     from sqlalchemy import Column, Integer, String
@@ -5,10 +10,7 @@ try:
     from sqlalchemy.orm import sessionmaker
 except ImportError:
     print("SQLAlchemy should be installed\npip install sqlalchemy")
-import sys
-import os
 
-from ebAlert.ebayclass import getPost
 FILELOCATION = os.path.join(os.path.expanduser("~"), "ebayklein.db")
 engine = create_engine('sqlite:///{!s}'.format(FILELOCATION), echo=False)
 Base = declarative_base()
@@ -34,84 +36,67 @@ class EbayLink(Base):
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
-
-def postExist(post_id):
+@contextmanager
+def getSession():
     session = Session()
     try:
-        result = session.query(EbayPost).filter(EbayPost.post_id == post_id).first()
-        if result is not None:
-            return True
-        else:
-            return False
-    except:
-        print(sys.exc_info())
-        return False
+        yield session
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logging.error(e)
+    finally:
+        session.close()
+
+
+
+def postExist(post_id):
+    with getSession() as db:
+        result = db.query(EbayPost).filter(EbayPost.post_id == post_id).first()
+        return bool(result)
+
 
 
 def addPost(post_list=None):
-    session = Session()
-    if post_list is not None:
-        for post in post_list:
-            try:
+    with getSession() as db:
+        if post_list is not None:
+            for post in post_list:
                 newPost = EbayPost()
                 newPost.post_id = post.id
                 newPost.link = post.link
                 newPost.price = post.price
                 newPost.title = post.title
-                session.add(newPost)
-                session.commit()
-                return True
-            except:
-                return False
+                db.add(newPost)
+
 
 
 def addLink(link):
-    session = Session()
-    try:
+    with getSession() as db:
         newLink = EbayLink()
         newLink.link = link
-        session.add(newLink)
-        session.commit()
-        return True
-    except:
-        return False
+        db.add(newLink)
 
 
 def getLinks():
-    session = Session()
-    try:
-        result = session.query(EbayLink).all()
+    with getSession() as db:
+        result = db.query(EbayLink).all()
         links = []
         for row in result:
             links.append(row.__dict__)
         return links
-    except:
-        print(sys.exc_info())
-        return []
 
 def removeLink(linkId):
-    session = Session()
-    try:
-        result = session.query(EbayLink).filter(EbayLink.id==linkId).first()
-        session.delete(result)
-        session.commit()
-        return True
-    except:
-        print(sys.exc_info())
-        return False
+    with getSession() as db:
+        result = db.query(EbayLink).filter(EbayLink.id==linkId).first()
+        db.delete(result)
 
 def clearPostDatabase():
-    session = Session()
-    try:
-        result = session.query(EbayPost)
+    with getSession() as db:
+        result = db.query(EbayPost)
         result.delete()
-        session.commit()
-        return True
-    except:
-        print(sys.exc_info())
-        return False
+
 
 
 if __name__ == "__main__":
     list = getPost("https://www.ebay-kleinanzeigen.de/s-weener/preis::250/lenovo/k0l2744r20")
-    #addLink("https://www.ebay-kleinanzeigen.de/s-weener/preis::250/thinkpad/k0l2744r20")
+    #addLink(https://www.ebay-kleinanzeigen.de/s-weener/preis::250/thinkpad/k0l2744r20")

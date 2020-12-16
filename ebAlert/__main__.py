@@ -20,11 +20,12 @@ def start():
     """
     loop through the urls in the database and send message
     """
-    links = [rows["link"] for rows in sql.getLinks()]
-    if links:
-        for link in links:
-            sleep(randint(0, 10))
-            addPost(link, True)
+    if sql.getLinks():
+        links = [rows["link"] for rows in sql.getLinks()]
+        if links:
+            for link in links:
+                sleep(randint(0, 10))
+                addPost(link, True)
     print("Success")
 
 
@@ -40,11 +41,12 @@ def links(show, remove, clear, add, init):
     """
     #TODO: Add verification if action worked.
     if show:
-        links = [(rows["id"], rows["link"])for rows in sql.getLinks()]
-        print("id     link")
-        if links:
-            for id, link in links:
-                print("{0:<{1}}{2}".format(id, 8 - len(str(id)) ,link))
+        if sql.getLinks():
+            links = [(rows["id"], rows["link"])for rows in sql.getLinks()]
+            print("id     link")
+            if links:
+                for id, link in links:
+                    print("{0:<{1}}{2}".format(id, 8 - len(str(id)) ,link))
     elif remove:
         sql.removeLink(remove)
         print("Link removed")
@@ -56,11 +58,12 @@ def links(show, remove, clear, add, init):
         addPost(add)
         print("Link and post added to the database")
     elif init:
-        links = [rows["link"] for rows in sql.getLinks()]
-        if links:
-            for link in links:
-                addPost(link)
-        print("database initialised")
+        if sql.getLinks():
+            links = [rows["link"] for rows in sql.getLinks()]
+            if links:
+                for link in links:
+                    addPost(link)
+            print("database initialised")
 
 
 def addPost(link, toSend=False):

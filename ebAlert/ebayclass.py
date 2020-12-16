@@ -37,6 +37,7 @@ def getPost(link):
         result = soup.find(attrs={"id": "srchrslt-adtable"})
         if result:
             articles = result.find_all(attrs={"class": "ad-listitem lazyload-item"})
+            print(articles)
             items = [EbayItem(item) for item in articles]
             return items
 
