@@ -1,13 +1,17 @@
-import ebAlert.ebayclass as ebay
-import ebAlert.sqlmodel as sql
-import ebAlert.telegramclass as telegram
+from . import ebayclass as ebay
+from . import sqlmodel as sql
+from . import telegramclass as telegram
 import sys
 from random import randint
 from time import sleep
+from . import createLogger
+
+log = createLogger(__name__)
+
 try:
     import click
 except ImportError:
-    print("Click should be installed\npip install click")
+    log.error("Click should be installed\npip install click")
 
 
 @click.group()

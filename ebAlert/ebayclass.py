@@ -1,8 +1,12 @@
 import requests
+from . import createLogger
+
+log = createLogger(__name__)
+
 try:
     from bs4 import BeautifulSoup
 except ImportError:
-    print('bs4 must be installed.\npip install bs4')
+    log.error('bs4 must be installed.\npip install bs4')
 
 
 class EbayItem:
@@ -37,10 +41,6 @@ def getPost(link):
         result = soup.find(attrs={"id": "srchrslt-adtable"})
         if result:
             articles = result.find_all(attrs={"class": "ad-listitem lazyload-item"})
-            print(articles)
             items = [EbayItem(item) for item in articles]
             return items
 
-
-if __name__ =="__main__":
-    getPost("https://www.ebay-kleinanzeigen.de/s-weener/preis::250/lenovo/k0l2744r20")

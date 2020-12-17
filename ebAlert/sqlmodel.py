@@ -1,7 +1,8 @@
 from contextlib import contextmanager
-import logging
 import os
-from ebAlert.ebayclass import getPost
+from . import createLogger
+
+log = createLogger(__name__)
 
 try:
     from sqlalchemy import create_engine
@@ -9,7 +10,7 @@ try:
     from sqlalchemy.ext.declarative import declarative_base
     from sqlalchemy.orm import sessionmaker
 except ImportError:
-    print("SQLAlchemy should be installed\npip install sqlalchemy")
+    log.error("SQLAlchemy should be installed\npip install sqlalchemy")
 
 FILELOCATION = os.path.join(os.path.expanduser("~"), "ebayklein.db")
 engine = create_engine('sqlite:///{!s}'.format(FILELOCATION), echo=False)
@@ -44,7 +45,7 @@ def getSession():
         session.commit()
     except Exception as e:
         session.rollback()
-        logging.error(e)
+        log.error(e)
     finally:
         session.close()
 
@@ -87,7 +88,7 @@ def getLinks():
 
 def removeLink(linkId):
     with getSession() as db:
-        result = db.query(EbayLink).filter(EbayLink.id==linkId).first()
+        result = db.query(EbayLink).filter(EbayLink.id == linkId).first()
         db.delete(result)
 
 def clearPostDatabase():
@@ -95,8 +96,3 @@ def clearPostDatabase():
         result = db.query(EbayPost)
         result.delete()
 
-
-
-if __name__ == "__main__":
-    list = getPost("https://www.ebay-kleinanzeigen.de/s-weener/preis::250/lenovo/k0l2744r20")
-    #addLink(https://www.ebay-kleinanzeigen.de/s-weener/preis::250/thinkpad/k0l2744r20")
