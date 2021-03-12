@@ -24,7 +24,7 @@ No API required - Only URL of the query.
 ## Requirements
 * A telegram bot API token and your personal conversation id
 * Python 3
-* click, requests, bs4 and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
+* click, requests, bs4, pydantic and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
 
 ## Future Plans
 
