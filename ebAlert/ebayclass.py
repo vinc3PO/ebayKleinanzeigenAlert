@@ -13,11 +13,16 @@ class EbayItem:
     """Class ebay item"""
     def __init__(self, contents):
         contents = [con for con in contents if con != "\n"]
+        log.error(contents)
         self.link = "https://www.ebay-kleinanzeigen.de" + contents[0].a['href']
         self.title = contents[0].a.text
-        self.price = contents[0].strong.text
+        for div in contents[0].findAll("p"):
+            if div.attrs.get("class"):
+                if "price" in div.attrs["class"][0]:
+                    self.price = div.text.strip()
+                elif "description" in div.attrs["class"][0]:
+                    self.description = div.text.replace("\n", " ")
         self.id = contents[0]['data-adid']
-        self.description = contents[0].p.text.replace("\n", " ")
         details = self.getDetails(contents[0])
         self.distance = details["distance"]
         self.city = details["city"]
@@ -26,7 +31,7 @@ class EbayItem:
         return '{}; {}; {}'.format(self.title, self.city, self.distance)
 
     def getDetails(self, content):
-        details = content.find_all("div", {'class': "aditem-details"})[0].text.split("\n")
+        details = content.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
         details = [det.strip() for det in details]
         return {"distance": details[-1], "city": details[-2]}
 

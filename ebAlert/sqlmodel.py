@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 import os
+from ebAlert import schema
 from . import createLogger
 
 log = createLogger(__name__)
@@ -83,7 +84,7 @@ def getLinks():
         result = db.query(EbayLink).all()
         links = []
         for row in result:
-            links.append(row.__dict__)
+            links.append(schema.Link.from_orm(row))
         return links
 
 def removeLink(linkId):
