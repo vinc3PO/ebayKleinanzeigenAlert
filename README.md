@@ -13,10 +13,12 @@ No API required - Only URL of the query.
 
 ## Usage & Example
 * ```ebAlert links [opts] ``` to show, add, remove links
+* ```ebAlert links --help ``` to get list of options for the links
+  
 * ```ebAlert start``` to start receiving notification
 
 
-* ```ebAlert links add "https://www.ebay...k0l9354r20"``` Assuming you just look through the web page while copy no notification will be send. 
+* ```ebAlert links -a "https://www.ebay...k0l9354r20"``` Assuming you just look through the web page while copy no notification will be send. 
 * Typically run as a cron job on an hourly basis.
 
 ## Requirements
