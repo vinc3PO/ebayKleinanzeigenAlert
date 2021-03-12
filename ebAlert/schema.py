@@ -1,5 +1,11 @@
-from pydantic import BaseModel
+from . import createLogger
 
+log = createLogger(__name__)
+
+try:
+    from pydantic import BaseModel
+except ImportError as e:
+    log.error("pydantic package is required\n pip install pydantic")
 
 class Link(BaseModel):
     id: int
