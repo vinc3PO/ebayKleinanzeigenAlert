@@ -34,6 +34,14 @@ class EbayLink(Base):
     link = Column(String)
 
 
+class TelegramBot(Base):
+    __tablename__ = "telegram_bot"
+
+    id = Column(Integer, primary_key=True)
+    token = Column(String)
+    chat_id = Column(String)
+
+
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
@@ -99,3 +107,9 @@ def clear_post_database():
     with get_session() as db:
         result = db.query(EbayPost)
         result.delete()
+
+
+def get_telegram_bot():
+    with get_session() as db:
+        result = db.query(TelegramBot).first()
+        return result.token, result.chat_id

@@ -24,6 +24,12 @@ def start():
     """
     loop through the urls in the database and send message
     """
+    try:
+        token, chat_id = sqlmodel.get_telegram_bot()
+    except TypeError as e:
+        log.error(e)
+        raise telegramclass.TelegramBotError
+
     links = sqlmodel.get_links()
     if links:
         for id, link in links:
