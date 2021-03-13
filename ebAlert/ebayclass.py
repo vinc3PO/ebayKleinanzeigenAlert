@@ -12,25 +12,26 @@ except ImportError:
 class EbayItem:
     """Class ebay item"""
     def __init__(self, contents):
-        contents = [con for con in contents if con != "\n"]
-        self.link = "https://www.ebay-kleinanzeigen.de" + contents[0].a['href']
-        self.title = contents[0].a.text
-        for div in contents[0].findAll("p"):
+        self.contents = [con for con in contents if con != "\n"][0]
+        self.link = "https://www.ebay-kleinanzeigen.de" + self.contents.a['href']
+        self.title = self.contents.a.text
+        for div in self.contents.findAll("p"):
             if div.attrs.get("class"):
                 if "price" in div.attrs["class"][0]:
                     self.price = div.text.strip()
                 elif "description" in div.attrs["class"][0]:
                     self.description = div.text.replace("\n", " ")
-        self.id = contents[0]['data-adid']
-        details = self.get_details(contents[0])
+        self.id = self.contents['data-adid']
+        details = self.get_details()
         self.distance = details["distance"]
         self.city = details["city"]
 
     def __repr__(self):
         return '{}; {}; {}'.format(self.title, self.city, self.distance)
 
-    def get_details(self, content):
-        details = content.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
+
+    def get_details(self):
+        details = self.contents.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
         details = [det.strip() for det in details]
         return {"distance": details[-1], "city": details[-2]}
 

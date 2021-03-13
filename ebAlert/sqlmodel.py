@@ -1,7 +1,6 @@
 from contextlib import contextmanager
 import os
 from . import create_logger
-from typing import List
 
 log = create_logger(__name__)
 
@@ -38,6 +37,7 @@ class EbayLink(Base):
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
+
 @contextmanager
 def get_session():
     session = Session()
@@ -61,12 +61,12 @@ def add_post(post_list=None):
     with get_session() as db:
         if post_list is not None:
             for post in post_list:
-                newPost = EbayPost()
-                newPost.post_id = post.id
-                newPost.link = post.link
-                newPost.price = post.price
-                newPost.title = post.title
-                db.add(newPost)
+                new_post = EbayPost()
+                new_post.post_id = post.id
+                new_post.link = post.link
+                new_post.price = post.price
+                new_post.title = post.title
+                db.add(new_post)
 
 
 def add_link(link):
@@ -89,9 +89,9 @@ def get_links():
         return links
 
 
-def remove_link(linkId):
+def remove_link(link_id):
     with get_session() as db:
-        result = db.query(EbayLink).filter(EbayLink.id == linkId).first()
+        result = db.query(EbayLink).filter(EbayLink.id == link_id).first()
         db.delete(result)
 
 
@@ -99,4 +99,3 @@ def clear_post_database():
     with get_session() as db:
         result = db.query(EbayPost)
         result.delete()
-

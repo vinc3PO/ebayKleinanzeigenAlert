@@ -74,12 +74,12 @@ def add_post(link, toSend=False):
     :param toSend: boolean
     :return: None
     """
-    posts = ebayclass.getPost(link)
+    posts = ebayclass.get_post(link)
     for post in posts:
         if not sqlmodel.post_exist(post.id):
             sqlmodel.add_post([post])
             if toSend:
-                telegramclass.sendMessage("{}\n\n{} ({})\n\n{}".format(post.title, post.price, post.city, post.link))
+                telegramclass.send_message("{}\n\n{} ({})\n\n{}".format(post.title, post.price, post.city, post.link))
 
 
 if __name__ == "__main__":
