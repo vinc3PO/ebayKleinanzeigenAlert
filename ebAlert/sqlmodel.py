@@ -1,9 +1,9 @@
 from contextlib import contextmanager
 import os
-from ebAlert import schema
-from . import createLogger
+from . import create_logger
+from typing import List
 
-log = createLogger(__name__)
+log = create_logger(__name__)
 
 try:
     from sqlalchemy import create_engine
@@ -39,7 +39,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 @contextmanager
-def getSession():
+def get_session():
     session = Session()
     try:
         yield session
@@ -51,16 +51,14 @@ def getSession():
         session.close()
 
 
-
-def postExist(post_id):
-    with getSession() as db:
+def post_exist(post_id):
+    with get_session() as db:
         result = db.query(EbayPost).filter(EbayPost.post_id == post_id).first()
         return bool(result)
 
 
-
-def addPost(post_list=None):
-    with getSession() as db:
+def add_post(post_list=None):
+    with get_session() as db:
         if post_list is not None:
             for post in post_list:
                 newPost = EbayPost()
@@ -71,29 +69,34 @@ def addPost(post_list=None):
                 db.add(newPost)
 
 
+def add_link(link):
+    with get_session() as db:
+        new_link = EbayLink()
+        new_link.link = link
+        db.add(new_link)
 
-def addLink(link):
-    with getSession() as db:
-        newLink = EbayLink()
-        newLink.link = link
-        db.add(newLink)
 
-
-def getLinks():
-    with getSession() as db:
+def get_links():
+    """
+    get link from the database
+    :return: [(id, link)]
+    """
+    with get_session() as db:
         result = db.query(EbayLink).all()
         links = []
         for row in result:
-            links.append(schema.Link.from_orm(row))
+            links.append((row.id, row.link))
         return links
 
-def removeLink(linkId):
-    with getSession() as db:
+
+def remove_link(linkId):
+    with get_session() as db:
         result = db.query(EbayLink).filter(EbayLink.id == linkId).first()
         db.delete(result)
 
-def clearPostDatabase():
-    with getSession() as db:
+
+def clear_post_database():
+    with get_session() as db:
         result = db.query(EbayPost)
         result.delete()
 

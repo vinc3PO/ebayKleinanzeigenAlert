@@ -1,7 +1,7 @@
 import requests
-from . import createLogger
+from . import create_logger
 
-log = createLogger(__name__)
+log = create_logger(__name__)
 
 try:
     from bs4 import BeautifulSoup
@@ -22,24 +22,24 @@ class EbayItem:
                 elif "description" in div.attrs["class"][0]:
                     self.description = div.text.replace("\n", " ")
         self.id = contents[0]['data-adid']
-        details = self.getDetails(contents[0])
+        details = self.get_details(contents[0])
         self.distance = details["distance"]
         self.city = details["city"]
 
     def __repr__(self):
         return '{}; {}; {}'.format(self.title, self.city, self.distance)
 
-    def getDetails(self, content):
+    def get_details(self, content):
         details = content.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
         details = [det.strip() for det in details]
         return {"distance": details[-1], "city": details[-2]}
 
 
-def getPost(link):
+def get_post(link):
     session = requests.Session()
-    customHeader = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0"}
+    custom_header = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0"}
     response = session.get('{}'.format(link),
-                           headers=customHeader)
+                           headers=custom_header)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
         result = soup.find(attrs={"id": "srchrslt-adtable"})

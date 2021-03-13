@@ -1,12 +1,12 @@
-from . import ebayclass as ebay
-from . import sqlmodel as sql
-from . import telegramclass as telegram
+from ebAlert import ebayclass
+from ebAlert import sqlmodel
+from ebAlert import telegramclass
 import sys
 from random import randint
 from time import sleep
-from . import createLogger
+from ebAlert import create_logger
 
-log = createLogger(__name__)
+log = create_logger(__name__)
 
 try:
     import click
@@ -19,23 +19,22 @@ def cli():
     pass
 
 
-@cli.command(help="Fetch new post and send Telegram notification.")
+@cli.command(help="Fetch new post and send telegramclass notification.")
 def start():
     """
     loop through the urls in the database and send message
     """
-    if sql.getLinks():
-        links = [rows.link for rows in sql.getLinks()]
-        if links:
-            for link in links:
-                print("Processing link: {}".format(link))
-                sleep(randint(0, 10))
-                addPost(link, True)
+    links = sqlmodel.get_links()
+    if links:
+        for id, link in links:
+            print("Processing link - id: {} - link: {} ".format(id, link))
+            sleep(randint(0, 10))
+            add_post(link, True)
     print("Finished")
 
 
 @cli.command(options_metavar="<options>", help="Add/Show/Remove URL from database.")
-@click.option("-r","--remove_link",'remove',metavar="<link id>", help="Remove link from database.")
+@click.option("-r","--remove_link", 'remove',metavar="<link id>", help="Remove link from database.")
 @click.option("-c", "--clear", is_flag=True, help="Clear post database.")
 @click.option("-a", "--add_url", 'add', metavar='<URL>', help="Add URL to database and fetch posts.")
 @click.option("-i", "--init", is_flag=True, help="Initialise database after clearing.")
@@ -46,44 +45,41 @@ def links(show, remove, clear, add, init):
     """
     #TODO: Add verification if action worked.
     if show:
-        if sql.getLinks():
-            links = [(rows.id, rows.link)for rows in sql.getLinks()]
-            print("id     link")
-            if links:
-                for id, link in links:
-                    print("{0:<{1}}{2}".format(id, 8 - len(str(id)) ,link))
+        links = sqlmodel.get_links()
+        if links:
+            for id, link in links:
+                print("{0:<{1}}{2}".format(id, 8 - len(str(id)) ,link))
     elif remove:
-        sql.removeLink(remove)
+        sqlmodel.remove_link(remove)
         print("Link removed")
     elif clear:
-        sql.clearPostDatabase()
+        sqlmodel.clear_post_database()
         print("Post database cleared")
     elif add:
-        sql.addLink(add)
-        addPost(add)
+        sqlmodel.add_link(add)
+        add_post(add)
         print("Link and post added to the database")
     elif init:
-        if sql.getLinks():
-            links = [rows.link for rows in sql.getLinks()]
-            if links:
-                for link in links:
-                    addPost(link)
+        links = sqlmodel.get_links()
+        if links:
+            for id, link in links:
+                add_post(link)
             print("database initialised")
 
 
-def addPost(link, toSend=False):
+def add_post(link, toSend=False):
     """
-    Function to fetch ebay posts, check the database and send telegram if new
+    Function to fetch ebayclass posts, check the database and send telegramclass if new
     :param link: string
     :param toSend: boolean
     :return: None
     """
-    posts = ebay.getPost(link)
+    posts = ebayclass.getPost(link)
     for post in posts:
-        if not sql.postExist(post.id):
-            sql.addPost([post])
+        if not sqlmodel.post_exist(post.id):
+            sqlmodel.add_post([post])
             if toSend:
-                telegram.sendMessage("{}\n\n{} ({})\n\n{}".format(post.title, post.price, post.city, post.link))
+                telegramclass.sendMessage("{}\n\n{} ({})\n\n{}".format(post.title, post.price, post.city, post.link))
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def createLogger(name):
+def create_logger(name):
     logger = logging.getLogger(name)
     # Create handlers
     c_handler = logging.StreamHandler()
