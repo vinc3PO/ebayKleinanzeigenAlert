@@ -28,9 +28,10 @@ def start():
         links = [rows.link for rows in sql.getLinks()]
         if links:
             for link in links:
+                print("Processing link: {}".format(link)
                 sleep(randint(0, 10))
                 addPost(link, True)
-    print("Success")
+    print("Finished")
 
 
 @cli.command(options_metavar="<options>", help="Add/Show/Remove URL from database.")

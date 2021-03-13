@@ -13,7 +13,6 @@ class EbayItem:
     """Class ebay item"""
     def __init__(self, contents):
         contents = [con for con in contents if con != "\n"]
-        log.error(contents)
         self.link = "https://www.ebay-kleinanzeigen.de" + contents[0].a['href']
         self.title = contents[0].a.text
         for div in contents[0].findAll("p"):
