@@ -1,5 +1,5 @@
 import requests
-from . import create_logger
+from ebAlert import create_logger
 
 log = create_logger(__name__)
 

@@ -1,54 +1,22 @@
 from contextlib import contextmanager
 import os
-from . import create_logger
+from ebAlert import create_logger
+from ebAlert.db import model, schema
 
 log = create_logger(__name__)
 
 try:
     from sqlalchemy import create_engine
-    from sqlalchemy import Column, Integer, String
+    from sqlalchemy import Column, Integer, String, ForeignKey
     from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy.orm import sessionmaker, relationship, joinedload
 except ImportError:
     log.error("SQLAlchemy should be installed\npip install sqlalchemy")
-
-FILELOCATION = os.path.join(os.path.expanduser("~"), "ebayklein.db")
-engine = create_engine('sqlite:///{!s}'.format(FILELOCATION), echo=False)
-Base = declarative_base()
-
-
-class EbayPost(Base):
-    __tablename__ = "ebay_post"
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    price = Column(String)
-    post_id = Column(Integer)
-    link = Column(String)
-
-
-class EbayLink(Base):
-    __tablename__ = "ebay_link"
-
-    id = Column(Integer, primary_key=True)
-    link = Column(String)
-
-
-class TelegramBot(Base):
-    __tablename__ = "telegram_bot"
-
-    id = Column(Integer, primary_key=True)
-    token = Column(String)
-    chat_id = Column(String)
-
-
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
 
 
 @contextmanager
 def get_session():
-    session = Session()
+    session = model.Session()
     try:
         yield session
         session.commit()
@@ -61,7 +29,7 @@ def get_session():
 
 def post_exist(post_id):
     with get_session() as db:
-        result = db.query(EbayPost).filter(EbayPost.post_id == post_id).first()
+        result = db.query(model.EbayPost).filter(model.EbayPost.post_id == post_id).first()
         return bool(result)
 
 
@@ -69,7 +37,7 @@ def add_post(post_list=None):
     with get_session() as db:
         if post_list is not None:
             for post in post_list:
-                new_post = EbayPost()
+                new_post = model.EbayPost()
                 new_post.post_id = post.id
                 new_post.link = post.link
                 new_post.price = post.price
@@ -77,10 +45,11 @@ def add_post(post_list=None):
                 db.add(new_post)
 
 
-def add_link(link):
+def add_link(link, bot_id):
     with get_session() as db:
-        new_link = EbayLink()
+        new_link = model.EbayLink()
         new_link.link = link
+        new_link.bot_id = bot_id
         db.add(new_link)
 
 
@@ -90,26 +59,41 @@ def get_links():
     :return: [(id, link)]
     """
     with get_session() as db:
-        result = db.query(EbayLink).all()
+        result = db.query(model.EbayLink).options(joinedload(model.EbayLink.bot)).all()
         links = []
-        for row in result:
-            links.append((row.id, row.link))
+        for link in result:
+            links.append(schema.Link.from_orm(link))
         return links
 
 
 def remove_link(link_id):
     with get_session() as db:
-        result = db.query(EbayLink).filter(EbayLink.id == link_id).first()
+        result = db.query(model.EbayLink).filter(model.EbayLink.id == link_id).first()
         db.delete(result)
 
 
 def clear_post_database():
     with get_session() as db:
-        result = db.query(EbayPost)
+        result = db.query(model.EbayPost)
         result.delete()
 
 
 def get_telegram_bot():
     with get_session() as db:
-        result = db.query(TelegramBot).first()
-        return result.token, result.chat_id
+        result = db.query(model.TelegramBot).all()
+        bots = []
+        for bot in result:
+            bots.append(schema.Bot.from_orm(bot))
+        return bots
+
+
+def add_telegram_bot(token, chat_id, comment):
+    with get_session() as db:
+        bot = model.TelegramBot(token=token, chat_id=chat_id, comment=comment)
+        db.add(bot)
+
+
+def remove_telegram_bot(bot_id):
+    with get_session() as db:
+        result = db.query(model.TelegramBot).filter_by(id=bot_id).first()
+        db.delete(result)
