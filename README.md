@@ -30,3 +30,11 @@ No API required - Only URL of the query.
 ## Future Plans
 
 * add functionality to add links directly via telegram.
+
+## Development Branch
+
+** dev_telegram **
+* Bot data stored in the database
+* Multibot allowed
+* Possibilite to choice towards which bot goes which notification
+* Docker
