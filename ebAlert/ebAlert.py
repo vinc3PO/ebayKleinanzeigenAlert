@@ -99,9 +99,9 @@ def telegram(show, add_bot,  remove):
     if show:
         bots = dbutils.get_telegram_bot()
         if bots:
-            print("id     description <token>")
+            print("id     description <chat_id : token>")
             for bot in bots:
-                print("{0:<{1}}{2} <{3}>".format(bot.id, 8 - len(str(id)), bot.comment, bot.token))
+                print("{0:<{1}}{2} <{3} : {4}>".format(bot.id, 8 - len(str(id)), bot.comment, bot.chat_id, bot.token))
     elif remove:
         dbutils.remove_telegram_bot(remove)
         print("Bot removed")
@@ -114,7 +114,6 @@ def telegram(show, add_bot,  remove):
         print("Telegram bot added added to the database")
     else:
         print('Help available with ebAlert telegram --help')
-
 
 
 def add_post(link, bot=None, toSend=False):
@@ -133,7 +132,7 @@ def add_post(link, bot=None, toSend=False):
                                                                         post.price,
                                                                         post.city,
                                                                         post.link),
-                                           bot)
+                                            bot)
 
 
 if __name__ == "__main__":

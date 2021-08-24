@@ -4,14 +4,11 @@ Small CLI program that will send you a Telegram message for every new posts on t
 No API required - Only URL of the query.
 
 ## Install
-* create a telegram bot -> https://core.telegram.org/bots
-  
-
 * Download folder or clone
 * cd yourself to the main directory
-
+* create a telegram bot -> https://core.telegram.org/bots
 * Hard code your telegram API key and messageID in the telegramclass.py file.
-* Install or run straight from the directory
+* Install or run straight from the directory.
   * install with ````pip install .  ````
   * run with ````python -m ebAlert ````
 
