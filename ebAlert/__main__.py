@@ -79,7 +79,10 @@ def add_post(link, toSend=False):
         if not sqlmodel.post_exist(post.id):
             sqlmodel.add_post([post])
             if toSend:
-                telegramclass.send_message("{}\n\n{} ({})\n\n{}".format(post.title, post.price, post.city, post.link))
+                try:
+                    telegramclass.send_message("{}\n\n{} ({})\n\n{}".format(post.title, post.price, post.city, post.link))
+                except Exception as e:
+                    log.error(f"Error sending telegram message:{e}")
 
 
 if __name__ == "__main__":

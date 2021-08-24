@@ -29,7 +29,6 @@ class EbayItem:
     def __repr__(self):
         return '{}; {}; {}'.format(self.title, self.city, self.distance)
 
-
     def get_details(self):
         details = self.contents.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
         details = [det.strip() for det in details]
