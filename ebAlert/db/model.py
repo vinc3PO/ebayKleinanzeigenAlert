@@ -1,12 +1,13 @@
 from contextlib import contextmanager
 import os
 from ebAlert import create_logger
+import datetime
 
 log = create_logger(__name__)
 
 try:
-    from sqlalchemy import create_engine
-    from sqlalchemy import Column, Integer, String, ForeignKey
+    from sqlalchemy import create_engine, func
+    from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
     from sqlalchemy.ext.declarative import declarative_base
     from sqlalchemy.orm import sessionmaker, relationship, joinedload
 except ImportError:
@@ -28,16 +29,6 @@ class TelegramBot(Base):
     link = relationship("EbayLink")
 
 
-class EbayPost(Base):
-    __tablename__ = "ebay_post"
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    price = Column(String)
-    post_id = Column(Integer)
-    link = Column(String)
-
-
 class EbayLink(Base):
     __tablename__ = "ebay_link"
 
@@ -46,6 +37,20 @@ class EbayLink(Base):
     bot_id = Column(Integer, ForeignKey(TelegramBot.id))
 
     bot = relationship("TelegramBot")
+
+
+class EbayPost(Base):
+    __tablename__ = "ebay_post"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    price = Column(String)
+    post_id = Column(Integer)
+    link = Column(String)
+    date = Column(DateTime, default=func.now())
+    search_id = Column(Integer, ForeignKey(EbayLink.id))
+
+    search = relationship("EbayLink")
 
 
 Base.metadata.create_all(engine)
