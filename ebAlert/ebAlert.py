@@ -128,11 +128,14 @@ def add_post(link, bot=None, toSend=False):
         if not dbutils.post_exist(post.id):
             dbutils.add_post([post])
             if toSend:
-                telegramclass.send_message("{}\n\n{} ({})\n\n{}".format(post.title,
-                                                                        post.price,
-                                                                        post.city,
-                                                                        post.link),
-                                            bot)
+                try:
+                    telegramclass.send_message("{}\n\n{} ({})\n\n{}".format(post.title,
+                                                                            post.price,
+                                                                            post.city,
+                                                                            post.link),
+                                                bot)
+                except Exception as e:
+                    log.error(f"Error while sending message for url ({post.link}) with the following error: {e}")
 
 
 if __name__ == "__main__":
