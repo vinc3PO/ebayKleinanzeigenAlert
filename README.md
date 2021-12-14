@@ -43,5 +43,5 @@ No API required - Only URL of the query.
 ** dev_telegram **
 * Bot data stored in the database
 * Multibot allowed
-* Possibilite to choice towards which bot goes which notification
+* Possibility to choose towards which bot goes which notification
 * Docker
