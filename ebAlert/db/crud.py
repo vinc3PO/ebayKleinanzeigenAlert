@@ -1,41 +1,10 @@
 from contextlib import contextmanager
-import os
-from . import create_logger
+
+from ebAlert import create_logger
+from ebAlert.db.db import Session
+from ebAlert.models.sqlmodel import EbayPost, EbayLink
 
 log = create_logger(__name__)
-
-try:
-    from sqlalchemy import create_engine
-    from sqlalchemy import Column, Integer, String
-    from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy.orm import sessionmaker
-except ImportError:
-    log.error("SQLAlchemy should be installed\npip install sqlalchemy")
-
-FILELOCATION = os.path.join(os.path.expanduser("~"), "ebayklein.db")
-engine = create_engine('sqlite:///{!s}'.format(FILELOCATION), echo=False)
-Base = declarative_base()
-
-
-class EbayPost(Base):
-    __tablename__ = "ebay_post"
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    price = Column(String)
-    post_id = Column(Integer)
-    link = Column(String)
-
-
-class EbayLink(Base):
-    __tablename__ = "ebay_link"
-
-    id = Column(Integer, primary_key=True)
-    link = Column(String)
-
-
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
 
 
 @contextmanager

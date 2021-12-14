@@ -1,12 +1,9 @@
 import requests
-from . import create_logger
+from bs4 import BeautifulSoup
+
+from ebAlert import create_logger
 
 log = create_logger(__name__)
-
-try:
-    from bs4 import BeautifulSoup
-except ImportError:
-    log.error('bs4 must be installed.\npip install bs4')
 
 
 class EbayItem:
@@ -14,7 +11,7 @@ class EbayItem:
     def __init__(self, contents):
         self.contents = [con for con in contents if con != "\n"][0]
         self.link = "https://www.ebay-kleinanzeigen.de" + self.contents.a['href']
-        self.title = self.contents.a.text
+        self.title = contents.find("a", {"class": "ellipsis"}).text
         for div in self.contents.findAll("p"):
             if div.attrs.get("class"):
                 if "price" in div.attrs["class"][0]:
@@ -31,8 +28,11 @@ class EbayItem:
 
     def get_details(self):
         details = self.contents.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
-        details = [det.strip() for det in details]
-        return {"distance": details[-1], "city": details[-2]}
+        details = [det.strip() for det in details if det.strip() != ""]
+        try:
+            return {"distance": details[1], "city": details[0]}
+        except Exception as e:
+            return {"distance": "??", "city": details[0]}
 
 
 def get_post(link):
