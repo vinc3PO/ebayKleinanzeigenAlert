@@ -3,8 +3,6 @@ from sqlalchemy.sql import func
 
 from ebAlert import create_logger
 from ebAlert.db.db import Base
-import datetime
-
 
 log = create_logger(__name__)
 

@@ -1,4 +1,5 @@
 import requests
+
 from ebAlert.core.config import settings
 
 
