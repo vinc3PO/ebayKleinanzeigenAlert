@@ -27,6 +27,13 @@ No API required - Only URL of the query.
 * Python 3
 * click, requests, bs4 and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
 
+## ChangeLog
+ 0.6 -> 1.0
+* Refactoring.
+* Add TOKEN and CHAT_ID taken from environment variable. 
+* Fix title and city and distance if so.
+* Update telegram message.  
+
 ## Future Plans
 
 * add functionality to add links directly via telegram.
