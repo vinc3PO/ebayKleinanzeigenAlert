@@ -11,5 +11,4 @@ log = create_logger(__name__)
 engine = create_engine('sqlite:///{!s}'.format(settings.FILE_LOCATION), echo=False)
 Base = declarative_base()
 
-Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
