@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 
+
 from ebAlert import create_logger
-from ebAlert.db.db import Base
+from ebAlert.db.db import Base, engine
 
 log = create_logger(__name__)
 
@@ -23,3 +24,6 @@ class EbayLink(Base):
 
     id = Column(Integer, primary_key=True)
     link = Column(String)
+
+
+Base.metadata.create_all(engine)
