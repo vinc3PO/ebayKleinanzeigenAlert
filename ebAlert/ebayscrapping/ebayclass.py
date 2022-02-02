@@ -10,37 +10,65 @@ URL_BASE = "https://www.ebay-kleinanzeigen.de"
 
 class EbayItem:
     """Class ebay item"""
-    distance = "??"
-    city = "??"
-    price = "??"
-    description = "??"
-
     def __init__(self, contents):
         self.contents = [con for con in contents if con != "\n"][0]
-        self.link = URL_BASE + self.contents.a.get('href')
-        self.title = contents.find("a", {"class": "ellipsis"}).text if contents.find("a", {"class": "ellipsis"}) else ""
-        for div in self.contents.findAll("p"):
-            if div.attrs.get("class"):
-                if "price" in div.attrs["class"][0]:
-                    self.price = div.text.strip()
-                elif "description" in div.attrs["class"][0]:
-                    self.description = div.text.replace("\n", " ")
-        self.id = self.contents.get('data-adid')
-        self.get_details()
+
+    @property
+    def link(self) -> str:
+        if self.contents.a.get('href'):
+            return URL_BASE + self.contents.a.get('href')
+        else:
+            return "No url found."
+
+    @property
+    def title(self) -> str:
+        if self.contents.find("a", {"class": "ellipsis"}):
+            return self.contents.find("a", {"class": "ellipsis"}).text
+        else:
+            return "No title found."
+
+    @property
+    def price(self) -> str:
+        return self.extract_price_detail("price")
+
+    @property
+    def description(self) -> str:
+        return self.extract_price_detail("description")
+
+    @property
+    def id(self) -> int:
+        return int(self.contents.get('data-adid')) or 0
+
+    @property
+    def city(self):
+        return self.extract_city_distance("city")
+
+    @property
+    def distance(self):
+        return self.extract_city_distance("distance")
 
     def __repr__(self):
         return '{}; {}; {}'.format(self.title, self.city, self.distance)
 
-    def get_details(self):
-        details_list = self.contents.find_all("div", {'class': "aditem-main--top--left"})
-        if details_list and details_list[0] and details_list[0].text:
-            details = self.contents.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
-            details = [det.strip() for det in details if det.strip() != ""]
-            if len(details) > 1:
-                self.distance = details[1]
-                self.city = details[0]
-            else:
-                self.city = details[0]
+    def extract_price_detail(self, key):
+        for div in self.contents.findAll("p"):
+            if div.attrs.get("class"):
+                if key in div.attrs["class"][0]:
+                    return div.text.strip().replace("\n", " ")
+        return f"No {key} found."
+
+    def extract_city_distance(self, key):
+        try:
+            details_list = self.contents.find_all("div", {'class': "aditem-main--top--left"})
+            if details_list and details_list[0].text:
+                details = self.contents.find_all("div", {'class': "aditem-main--top--left"})[0].text.split("\n")
+                details = [det.strip() for det in details if det.strip() != ""]
+                if key == "city":
+                    return details[0]
+                elif key == "distance":
+                    return details[1]
+        except Exception:
+            return f"No {key} found." if key == "city" else None
 
 
 def get_post(link):
@@ -49,7 +77,8 @@ def get_post(link):
     response = session.get('{}'.format(link),
                            headers=custom_header)
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
+        clean_response = response.text.replace("&#8203", "")  # this character breaks the beautiful soup parsing.
+        soup = BeautifulSoup(clean_response, "html.parser")
         result = soup.find(attrs={"id": "srchrslt-adtable"})
         if result:
             articles = result.find_all(attrs={"class": "ad-listitem lazyload-item"})
