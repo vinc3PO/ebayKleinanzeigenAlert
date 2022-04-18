@@ -28,6 +28,14 @@ No API required - Only URL of the query.
 * click, requests, bs4 and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
 
 ## ChangeLog
+ 1.0 -> 1.1
+* Refactoring
+* Removing most of the data added to database as it was not used
+* Move to SQLalchemy 1.4
+* Adding testing suite
+* Better handling of special characters that messed up the telegram message
+* Preparing for multiple chat id
+
  0.6 -> 1.0
 * Refactoring.
 * Add TOKEN and CHAT_ID taken from environment variable. 
@@ -45,3 +53,8 @@ No API required - Only URL of the query.
 * Multibot allowed
 * Possibility to choose towards which bot goes which notification
 * Docker
+
+## Featured German Tutorial
+From dandud100
+
+https://youtu.be/lAqDkUdGKy0
