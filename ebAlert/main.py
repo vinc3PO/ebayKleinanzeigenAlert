@@ -1,23 +1,26 @@
 import sys
-import time
 from random import randint
 from time import sleep
 
 from ebAlert import create_logger
-from ebAlert.db import crud
+from ebAlert.crud import base
 from ebAlert.ebayscrapping import ebayclass
-from ebAlert.telegram import telegramclass
+from ebAlert.telegram.telegramclass import telegram
+from ebAlert.crud.base import crud_link, get_session
+from ebAlert.crud.post import crud_post
+from sqlalchemy.orm import Session
 
 log = create_logger(__name__)
 
 try:
     import click
+    from click import BaseCommand
 except ImportError:
     log.error("Click should be installed\npip install click")
 
 
 @click.group()
-def cli():
+def cli() -> BaseCommand:
     pass
 
 
@@ -26,67 +29,67 @@ def start():
     """
     loop through the urls in the database and send message
     """
-    links = crud.get_links()
-    if links:
-        for id, link in links:
-            print("Processing link - id: {} - link: {} ".format(id, link))
-            sleep(randint(0, 10))
-            add_post(link, True)
-    print("Finished")
+    print(">> Starting Ebay alert")
+    with get_session() as db:
+        get_all_post(db=db, telegram_message=True)
+    print("<< Ebay alert finished")
 
 
 @cli.command(options_metavar="<options>", help="Add/Show/Remove URL from database.")
-@click.option("-r","--remove_link", 'remove',metavar="<link id>", help="Remove link from database.")
+@click.option("-r", "--remove_link", 'remove', metavar="<link id>", help="Remove link from database.")
 @click.option("-c", "--clear", is_flag=True, help="Clear post database.")
-@click.option("-a", "--add_url", 'add', metavar='<URL>', help="Add URL to database and fetch posts.")
+@click.option("-a", "--add_url", 'url', metavar='<URL>', help="Add URL to database and fetch posts.")
 @click.option("-i", "--init", is_flag=True, help="Initialise database after clearing.")
-@click.option("-s", "--show", is_flag=True,help="Show all urls and corresponding id.")
-def links(show, remove, clear, add, init):
+@click.option("-s", "--show", is_flag=True, help="Show all urls and corresponding id.")
+def links(show, remove, clear, url, init):
     """
     cli related to the links. Add, remove, clear, init and show
     """
     #TODO: Add verification if action worked.
-    if show:
-        links = crud.get_links()
-        if links:
-            for id, link in links:
-                print("{0:<{1}}{2}".format(id, 8 - len(str(id)) ,link))
-    elif remove:
-        crud.remove_link(remove)
-        print("Link removed")
-    elif clear:
-        crud.clear_post_database()
-        print("Post database cleared")
-    elif add:
-        crud.add_link(add)
-        add_post(add)
-        print("Link and post added to the database")
-    elif init:
-        links = crud.get_links()
-        if links:
-            for id, link in links:
-                add_post(link)
-            print("database initialised")
+    with get_session() as db:
+        if show:
+            print(">> List of URL")
+            links = crud_link.get_all(db)
+            if links:
+                for link_model in links:
+                    print("{0:<{1}}{2}".format(link_model.id, 8 - len(str(link_model.id)), link_model.link))
+            print("<< List of URL")
+        elif remove:
+            print(">> Removing link")
+            if crud_link.remove(db=db, id=remove):
+                print("<< Link removed")
+            else:
+                print("<< No link found")
+        elif clear:
+            print(">> Clearing item database")
+            crud_post.clear_database(db=db)
+            print("<< Database cleared")
+        elif url:
+            print(">> Adding url")
+            if crud_link.get_by_key(key_mapping={"link": url}, db=db):
+                print("<< Link already exists")
+            else:
+                crud_link.create({"link": url}, db)
+                ebay_items = ebayclass.EbayItemFactory(url)
+                crud_post.add_items_to_db(db, ebay_items.item_list)
+                print("<< Link and post added to the database")
+        elif init:
+            print(">> Initializing database")
+            get_all_post(db)
+            print("<< Database initialized")
 
 
-def add_post(link, toSend=False):
-    """
-    Function to fetch ebayclass posts, check the database and send telegramclass if new
-    :param link: string
-    :param toSend: boolean
-    :return: None
-    """
-    for post in ebayclass.get_post(link):
-        if not crud.post_exist(post.id):
-            crud.add_post([post])
-            if toSend:
-                try:
-                    message = f"{post.title}\n\n{post.price} ({post.city})\n\n"
-                    url = f'<a href="{post.link}">{post.link}</a>'
-                    telegramclass.send_message(message + url)
-                except Exception as e:
-                    log.error(f"Error sending telegram message:{e}")
-            time.sleep(0.5)
+def get_all_post(db: Session, telegram_message=False):
+    links = crud_link.get_all(db=db)
+    if links:
+        for link_model in links:
+            print("Processing link - id: {} - link: {} ".format(link_model.id, link_model.link))
+            post_factory = ebayclass.EbayItemFactory(link_model.link)
+            items = crud_post.add_items_to_db(db=db, items=post_factory.item_list)
+            if telegram_message:
+                for item in items:
+                    telegram.send_formated_message(item)
+            sleep(randint(0, 40)/10)
 
 
 if __name__ == "__main__":
