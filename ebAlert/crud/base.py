@@ -12,6 +12,7 @@ log = create_logger(__name__)
 
 Model = TypeVar("Model", bound=Base)
 
+
 @contextmanager
 def get_session():
     session = Session_DB()
@@ -61,7 +62,6 @@ class CRUBBase:
     def clear_database(self, db: Session) -> None:
         db.execute(delete(self.model).where(self.model.id >= 0).execution_options(synchronize_session="fetch"))
         db.commit()
-
 
     def _get_clean_dict(self, obj_in: Dict[str, str]):
         new_object = {}

@@ -1,5 +1,6 @@
-from ebAlert.ebayscrapping.ebayclass import EbayItemFactory, EbayItem
 from bs4 import BeautifulSoup
+
+from ebAlert.ebayscrapping.ebayclass import EbayItemFactory, EbayItem
 
 
 def test_item_extractor():
@@ -24,3 +25,7 @@ def test_ebay_item():
         assert item.distance is None
         assert item.description == "Angebot enthält: 1x ATaris St Spiel in Ovp - " \
                                    "Neu (noch Foliert)  Schaut auch in unsere weiteren..."
+
+
+if __name__ == "__main__":
+    pass

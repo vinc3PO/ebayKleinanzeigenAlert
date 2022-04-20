@@ -12,4 +12,3 @@ engine = create_engine(f'sqlite:///{settings.FILE_LOCATION}', echo=False, future
 Base = declarative_base()
 
 Session = sessionmaker(bind=engine, future=True)
-

@@ -1,11 +1,11 @@
-import bs4
+from typing import Generator
+
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from ebAlert.core.config import settings
+
 from ebAlert import create_logger
-from typing import Generator
-from sqlalchemy.orm import Session
+from ebAlert.core.config import settings
 
 log = create_logger(__name__)
 

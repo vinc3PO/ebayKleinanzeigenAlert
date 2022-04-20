@@ -2,13 +2,13 @@ import sys
 from random import randint
 from time import sleep
 
+from sqlalchemy.orm import Session
+
 from ebAlert import create_logger
-from ebAlert.crud import base
-from ebAlert.ebayscrapping import ebayclass
-from ebAlert.telegram.telegramclass import telegram
 from ebAlert.crud.base import crud_link, get_session
 from ebAlert.crud.post import crud_post
-from sqlalchemy.orm import Session
+from ebAlert.ebayscrapping import ebayclass
+from ebAlert.telegram.telegramclass import telegram
 
 log = create_logger(__name__)
 
@@ -45,7 +45,7 @@ def links(show, remove, clear, url, init):
     """
     cli related to the links. Add, remove, clear, init and show
     """
-    #TODO: Add verification if action worked.
+    # TODO: Add verification if action worked.
     with get_session() as db:
         if show:
             print(">> List of URL")

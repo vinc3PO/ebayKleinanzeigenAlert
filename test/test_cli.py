@@ -1,8 +1,8 @@
-import click
-from click.testing import CliRunner
-from ebAlert.main import cli, links
-from pytest import fixture
 from typing import List
+
+from click.testing import CliRunner
+
+from ebAlert.main import cli
 
 
 def get_runner(actions: List[str]):
@@ -34,7 +34,8 @@ def test_link_clearing():
 
 
 def test_link_add():
-    for test in [["links", "-a", "https://www.ebay-kleinanzeigen.de/s-atari/k0"], ['links', '--add_url', "https://www.ebay-kleinanzeigen.de/s-atari/k0"]]:
+    for test in [["links", "-a", "https://www.ebay-kleinanzeigen.de/s-atari/k0"],
+                 ['links', '--add_url', "https://www.ebay-kleinanzeigen.de/s-atari/k0"]]:
         result_list = get_runner(test)
         assert result_list[0] == ">> Adding url"
         assert result_list[-1][0:2] == "<<"
