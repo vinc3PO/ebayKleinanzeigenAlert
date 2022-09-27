@@ -21,7 +21,8 @@ No API required - Only URL of the query.
    5. Copy the token
 4. Get you Telegram Message ID
    1. Open the chat with [@RawDataBot](https://t.me/RawDataBot)
-   2. Copy the message ID. Either from `message/from/id` or `message/chat/id`. The message ID looks like `417417807`.
+   2. Enter `/start`
+   3. Copy the message ID. Either from `message/from/id` or `message/chat/id`. The message ID looks like `417417807`.
 5. Edit `ebAlert/core/config.py` and insert your token & message ID.
 6. Install dependencies
    ```sh
