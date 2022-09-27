@@ -32,8 +32,6 @@ No API required - Only URL of the query.
    python -m ebAlert
    ```
 
-You can also watch [this](https://www.youtube.com/watch?v=lAqDkUdGKy0) YouTube tutorial (in German) on how to setup this CLI and configure it with `crontab`.
-
 ## Usage & Example
 * ```ebAlert links [opts] ``` to show, add, remove links
 * ```ebAlert links --help ``` to get list of options for the links
