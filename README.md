@@ -24,7 +24,7 @@ No API required - Only URL of the query.
    2. Enter `/start`
    3. Copy the message ID. Either from `message/from/id` or `message/chat/id`. The message ID looks like `417417807`.
 5. Edit `ebAlert/core/config.py` and insert your token & message ID.
-6. Install dependencies
+6. Install the dependencies
    ```sh
    pip install .
    ```
