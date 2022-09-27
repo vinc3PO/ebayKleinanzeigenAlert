@@ -17,7 +17,7 @@ No API required - Only URL of the query.
    1. Open the chat with [@BotFather](https://t.me/BotFather)
    2. Enter `/newbot`
    3. Enter the name of your Bot (e.g. eBay Kleinanzeigen Bot)
-   4. Enter a unique username for your bot (e.g. my_ebay_kleinanzeigen_bot)
+   4. Enter an unique username for your bot (e.g. my_ebay_kleinanzeigen_bot)
    5. Copy the token
 4. Get you Telegram Message ID
    1. Open the chat with [@RawDataBot](https://t.me/RawDataBot)
