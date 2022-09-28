@@ -77,4 +77,4 @@ No API required - Only URL of the query.
 
 ## Featured German Tutorial
 
-[![Watch on YouTube](https://i3.ytimg.com/vi/lAqDkUdGKy0/hqdefault.jpg)](https://youtu.be/lAqDkUdGKy0)
+[![Watch on YouTube](https://img.youtube.com/vi/lAqDkUdGKy0/mqdefault.jpg)](https://youtu.be/lAqDkUdGKy0)
