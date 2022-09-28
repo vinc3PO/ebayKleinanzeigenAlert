@@ -76,6 +76,5 @@ No API required - Only URL of the query.
 * Docker
 
 ## Featured German Tutorial
-From dandud100
 
-https://youtu.be/lAqDkUdGKy0
+[![Watch on YouTube](https://img.youtube.com/vi/lAqDkUdGKy0/default.jpg)](https://youtu.be/lAqDkUdGKy0)
