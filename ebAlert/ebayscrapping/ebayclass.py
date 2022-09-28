@@ -31,7 +31,7 @@ class EbayItem:
 
     @property
     def price(self) -> str:
-        return self._find_text_in_class("aditem-main--middle--price") or "No Price"
+        return self._find_text_in_class("aditem-main--middle--price-shipping--price") or "No Price"
 
     @property
     def description(self) -> str:
