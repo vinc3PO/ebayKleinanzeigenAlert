@@ -4,13 +4,34 @@ Small CLI program that will send you a Telegram message for every new posts on t
 No API required - Only URL of the query.
 
 ## Install
-* Download folder or clone
-* cd yourself to the main directory
-* create a telegram bot -> https://core.telegram.org/bots
-* Hard code your telegram API key and messageID in the telegramclass.py file.
-* Install or run straight from the directory.
-  * install with ````pip install .  ````
-  * run with ````python -m ebAlert ````
+
+1. Clone this repository
+   ```sh
+   git clone https://github.com/vinc3PO/ebayKleinanzeigenAlert
+   ```
+2. Navigate to the cloned repository
+   ```sh
+   cd ebayKleinanzeigenAlert
+   ```
+3. Create a Telegram Bot
+   1. Open the chat with [@BotFather](https://t.me/BotFather)
+   2. Enter `/newbot`
+   3. Enter the name of your Bot (e.g. eBay Kleinanzeigen Bot)
+   4. Enter an unique username for your bot (e.g. my_ebay_kleinanzeigen_bot)
+   5. Copy the token
+4. Get you Telegram Message ID
+   1. Open the chat with [@RawDataBot](https://t.me/RawDataBot)
+   2. Enter `/start`
+   3. Copy the message ID. Either from `message/from/id` or `message/chat/id`. The message ID looks like `417417807`.
+5. Edit `ebAlert/core/config.py` and insert your token & message ID.
+6. Install the dependencies
+   ```sh
+   pip install .
+   ```
+7. Run the `ebAlert` CLI
+   ```sh
+   python -m ebAlert
+   ```
 
 ## Usage & Example
 * ```ebAlert links [opts] ``` to show, add, remove links
@@ -55,6 +76,6 @@ No API required - Only URL of the query.
 * Docker
 
 ## Featured German Tutorial
-From dandud100
 
-https://youtu.be/lAqDkUdGKy0
+[![Watch on YouTube:](https://img.youtube.com/vi/lAqDkUdGKy0/mqdefault.jpg)](https://youtu.be/lAqDkUdGKy0)
+<br>https://youtu.be/lAqDkUdGKy0
