@@ -23,7 +23,7 @@ No API required - Only URL of the query.
    1. Open the chat with [@RawDataBot](https://t.me/RawDataBot)
    2. Enter `/start`
    3. Copy the message ID. Either from `message/from/id` or `message/chat/id`. The message ID looks like `417417807`.
-5. Edit `ebAlert/core/config.py` and insert your token & message ID.
+5. Set environment variables TOKEN and CHAT_ID. Or hard code your token & message ID in `ebAlert/core/config.py`.
 6. Install the dependencies
    ```sh
    pip install .
@@ -49,6 +49,10 @@ No API required - Only URL of the query.
 * click, requests, bs4 and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
 
 ## ChangeLog
+ 1.1 -> 1.2
+* No price fix (dandud100)
+* Updated Readme (nilsreichardt)
+
  1.0 -> 1.1
 * Refactoring
 * Removing most of the data added to database as it was not used
