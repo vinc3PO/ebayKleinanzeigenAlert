@@ -85,7 +85,7 @@ def get_all_post(db: Session, telegram_message=False):
         for link_model in links:
             print("Processing link - id: {} - link: {} ".format(link_model.id, link_model.link))
             post_factory = ebayclass.EbayItemFactory(link_model.link)
-            items = crud_post.add_items_to_db(db=db, items=post_factory.item_list)
+            items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, update=True)
             if telegram_message:
                 for item in items:
                     telegram.send_formated_message(item)

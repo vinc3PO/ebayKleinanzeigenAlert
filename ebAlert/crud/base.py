@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from pprint import pprint
 from typing import Dict, Any, List, TypeVar, Optional
 
 from sqlalchemy import select, delete
@@ -50,6 +51,16 @@ class CRUBBase:
         db.add(item)
         db.commit()
         db.refresh(item)
+        return item
+
+    def update(self, items: Dict[str, Any], db: Session) -> Optional[Model]:
+        clean_dict = self._get_clean_dict(items)
+        if not clean_dict:
+            return
+        item = self.model(**clean_dict)
+        db.query(self.model).filter(self.model.post_id == item.post_id). \
+            update({'price': item.price})
+        db.commit()
         return item
 
     def remove(self, id: int, db: Session) -> Optional[bool]:

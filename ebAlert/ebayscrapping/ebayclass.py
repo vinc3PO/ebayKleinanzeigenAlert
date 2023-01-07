@@ -14,6 +14,7 @@ class EbayItem:
     """Class ebay item"""
     def __init__(self, contents: Tag):
         self.contents = contents
+        self.new_price = ""
         self._city = None
         self._distance = None
         self._extract_city_distance()
@@ -26,12 +27,19 @@ class EbayItem:
             return "No url found."
 
     @property
+    def shipping(self) -> str:
+        return self._find_text_in_class("aditem-main--middle--price-shipping--shipping") or "No Shipping"
+
+    @property
     def title(self) -> str:
         return self._find_text_in_class("ellipsis") or "No Title"
 
     @property
     def price(self) -> str:
-        return self._find_text_in_class("aditem-main--middle--price-shipping--price") or "No Price"
+        if self.new_price == "":
+            return self._find_text_in_class("aditem-main--middle--price-shipping--price") or "No Price"
+        else:
+            return self.new_price
 
     @property
     def description(self) -> str:
