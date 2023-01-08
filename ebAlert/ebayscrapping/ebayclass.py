@@ -4,6 +4,9 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
+from random import randint
+from time import sleep
+
 from ebAlert import create_logger
 from ebAlert.core.config import settings
 
@@ -14,7 +17,7 @@ class EbayItem:
     """Class ebay item"""
     def __init__(self, contents: Tag):
         self.contents = contents
-        self.new_price = ""
+        self.old_price = ""
         self._city = None
         self._distance = None
         self._extract_city_distance()
@@ -36,11 +39,14 @@ class EbayItem:
 
     @property
     def price(self) -> str:
-        if self.new_price == "":
-            return self._find_text_in_class("aditem-main--middle--price-shipping--price") or "No Price"
-        else:
-            return self.new_price
+        return self._find_text_in_class("aditem-main--middle--price-shipping--price") or "No Price"
 
+    @property
+    def print_price(self) -> str:
+        if self.old_price == "":
+            return self.price
+        else:
+            return "NEW:" + self.old_price + " --> " + self.price
     @property
     def description(self) -> str:
         description = self._find_text_in_class("aditem-main--middle--description")
@@ -62,7 +68,7 @@ class EbayItem:
         return self._distance
 
     def __repr__(self):
-        return '{}; {}; {}'.format(self.title, self.city, self.distance)
+        return '{}; {}; {}'.format(self.title, self.city, self.price)
 
     def _find_text_in_class(self, class_name: str):
         found = self.contents.find(attrs={"class": f"{class_name}"})
@@ -82,29 +88,55 @@ class EbayItem:
 
 
 class EbayItemFactory:
-    def __init__(self, link):
-        self.link = link
-        web_pages = self.get_webpage()
-        if web_pages:
-            articles = self.extract_item_from_page(self.get_webpage())
-            self.item_list = [EbayItem(article) for article in articles]
-        else:
-            self.item_list = []
+    def __init__(self, link_model):
+        self.item_list = []
+        npage_max = 3
+        npage_found = 1
+        npage = 1
+        while 0 < npage <= npage_max:
+            web_page_soup = self.get_webpage(self.generate_url(link_model, npage))
+            if web_page_soup:
+                articles = self.extract_item_from_page(web_page_soup)
+                self.item_list += [EbayItem(article) for article in articles]
+                npage_found = len(web_page_soup.find(attrs={"class": "pagination-pages"}).find_all())
+                if npage < npage_found and npage <= npage_max:
+                    npage += 1
+                    sleep(randint(0, 20) / 10)
+                else:
+                    npage = 0
+            else:
+                npage = 0
 
-    def get_webpage(self) -> str:
+    @staticmethod
+    def generate_url(link_model, npage=1) -> str:
+        # generate url from DB using URL placeholders: {PRICE} {NPAGE} {SEARCH_TERM}
+        current_page = ""
+        if npage > 1:
+            current_page = "seite:" + str(npage) + "/"
+        search_term = link_model.search_string.replace(" ", "-") + "/"
+        # currently price is not considered in getting the results, articles are filtered later
+        price = ""
+        url = settings.URL_BASE
+        if link_model.search_type == "GPU":
+            url += settings.URL_TYPE_GPU.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
+        print(url)
+        return url
+
+    @staticmethod
+    def get_webpage(url: str) -> BeautifulSoup:
         custom_header = {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0"
         }
-        response = requests.get(self.link, headers=custom_header)
+        response = requests.get(url, headers=custom_header)
         if response and response.status_code == 200:
-            return response.text
+            cleaned_response = response.text.replace("&#8203", "")
+            soup = BeautifulSoup(cleaned_response, "html.parser")
+            return soup
         else:
-            print(f"<< webpage fetching error for url: {self.link}")
+            print(f"<< webpage fetching error for url: {url}")
 
     @staticmethod
-    def extract_item_from_page(text: str) -> Generator:
-        cleaned_response = text.replace("&#8203", "")
-        soup = BeautifulSoup(cleaned_response, "html.parser")
+    def extract_item_from_page(soup:BeautifulSoup) -> Generator:
         result = soup.find(attrs={"id": "srchrslt-adtable"})
         if result:
             for item in result.find_all(attrs={"class": "ad-listitem lazyload-item"}):

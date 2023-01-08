@@ -8,7 +8,8 @@ from ebAlert.core.config import settings
 log = create_logger(__name__)
 
 
-engine = create_engine(f'sqlite:///{settings.FILE_LOCATION}', echo=False, future=True)
+engine = create_engine(f'sqlite:///{settings.FILE_LOCATION}', echo=False)
+
 Base = declarative_base()
 
-Session = sessionmaker(bind=engine, future=True)
+Session = sessionmaker(bind=engine)

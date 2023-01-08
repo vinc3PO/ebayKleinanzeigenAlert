@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import requests
 
 from ebAlert.core.config import settings
@@ -22,7 +24,7 @@ class SendingClass:
             return response.json()["ok"]
 
     def send_formated_message(self, item: EbayItem):
-        message = f"{item.title}\n\n{item.price}\n\n{item.shipping}\n({item.city})\n\n"
+        message = f"{item.title}\n\n{item.print_price}\n\n{item.shipping}\n({item.city})\n\n"
         url = f'<a href="{item.link}">{item.link}</a>'
         self.send_message(message + url)
 

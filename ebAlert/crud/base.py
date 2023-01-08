@@ -58,8 +58,7 @@ class CRUBBase:
         if not clean_dict:
             return
         item = self.model(**clean_dict)
-        db.query(self.model).filter(self.model.post_id == item.post_id). \
-            update({'price': item.price})
+        db.query(self.model).filter(self.model.post_id == item.post_id).update({'price': item.price})
         db.commit()
         return item
 

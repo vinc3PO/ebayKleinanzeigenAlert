@@ -23,6 +23,10 @@ class EbayLink(Base):
 
     id = Column(Integer, primary_key=True)
     link = Column(String)
+    search_type = Column(String)
+    search_string = Column(String)
+    price_low = Column(Integer)
+    price_high = Column(Integer)
 
 
 Base.metadata.create_all(engine)

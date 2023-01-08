@@ -1,6 +1,5 @@
+import re
 import sys
-from random import randint
-from time import sleep
 
 from sqlalchemy.orm import Session
 
@@ -80,16 +79,33 @@ def links(show, remove, clear, url, init):
 
 
 def get_all_post(db: Session, telegram_message=False):
-    links = crud_link.get_all(db=db)
-    if links:
-        for link_model in links:
-            print("Processing link - id: {} - link: {} ".format(link_model.id, link_model.link))
-            post_factory = ebayclass.EbayItemFactory(link_model.link)
-            items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, update=True)
+    searches = crud_link.get_all(db=db)
+    if searches:
+        for link_model in searches:
+            # scrape search pages and add new/changed items to db
+            print("Processing link ID:{} --- searching {}, search term '{}', display price range: {} - {}".format(link_model.id, link_model.search_type, link_model.search_string, link_model.price_low, link_model.price_high))
+            post_factory = ebayclass.EbayItemFactory(link_model)
+            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list)
+            # filter which new/changed items are to be sent by Telegram
             if telegram_message:
-                for item in items:
-                    telegram.send_formated_message(item)
-            sleep(randint(0, 40)/10)
+                for item in message_items:
+                    price = re.findall(r'\d+', item.price)
+                    worth_messaging = False
+                    if len(price)>0:
+                        price = int(price[0])
+                        # price value added
+                        if price == 1:
+                            worth_messaging = True
+                        elif int(link_model.price_low) <= price <= int(link_model.price_high):
+                            worth_messaging = True
+                        elif int(link_model.price_high) < price <= round(int(link_model.price_high)*1.1):
+                            # price is negotiable and max 10% over watching price
+                            worth_messaging = True
+                    else:
+                        # no price offered
+                        worth_messaging = True
+                    if worth_messaging:
+                        telegram.send_formated_message(item)
 
 
 if __name__ == "__main__":
