@@ -7,7 +7,7 @@ No API required - Only URL of the query.
 
 1. Clone this repository
    ```sh
-   git clone https://github.com/vinc3PO/ebayKleinanzeigenAlert
+   git clone https://github.com/cyberpete2244/ebayKleinanzeigenAlert
    ```
 2. Navigate to the cloned repository
    ```sh
@@ -24,11 +24,12 @@ No API required - Only URL of the query.
    2. Enter `/start`
    3. Copy the message ID. Either from `message/from/id` or `message/chat/id`. The message ID looks like `417417807`.
 5. Set environment variables TOKEN and CHAT_ID. Or hard code your token & message ID in `ebAlert/core/config.py`.
-6. Install the dependencies
+6. Start a conversation with the bot from your Telegram App, otherwise the Telegram Bot cannot contact you.
+7. Install the dependencies
    ```sh
    pip install .
    ```
-7. Run the `ebAlert` CLI
+8. Run the `ebAlert` CLI
    ```sh
    python -m ebAlert
    ```
