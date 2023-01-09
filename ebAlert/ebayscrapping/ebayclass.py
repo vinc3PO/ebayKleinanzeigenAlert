@@ -101,7 +101,7 @@ class EbayItemFactory:
                 npage_found = len(web_page_soup.find(attrs={"class": "pagination-pages"}).find_all())
                 if npage < npage_found and npage <= npage_max:
                     npage += 1
-                    sleep(randint(0, 20) / 10)
+                    sleep(randint(0, 30) / 10)
                 else:
                     npage = 0
             else:
