@@ -104,7 +104,7 @@ def get_all_post(db: Session, telegram_message=False):
                             # price is negotiable and max 10% over watching price
                             item.pricehint = f"(+10% from {link_model.price_high}€)"
                             worth_messaging = True
-                        elif int(link_model.price_low)*0.7 > price:
+                        elif int(link_model.price_low)*0.7 <= price < int(link_model.price_low):
                             # price is 30% below watch price
                             item.pricehint = f"(-30% from {link_model.price_low}€)"
                             worth_messaging = True
