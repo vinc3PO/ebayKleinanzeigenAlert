@@ -18,6 +18,7 @@ class EbayItem:
     def __init__(self, contents: Tag):
         self.contents = contents
         self.old_price = ""
+        self.pricehint = ""
         self._city = None
         self._distance = None
         self._extract_city_distance()
@@ -43,10 +44,13 @@ class EbayItem:
 
     @property
     def print_price(self) -> str:
-        if self.old_price == "":
-            return self.price
-        else:
-            return "NEW:" + self.old_price + " --> " + self.price
+        print_price = self.price
+        if self.old_price != "":
+            print_price = "NEW:" + self.old_price + " --> " + print_price
+        if self.pricehint != "":
+            print_price += " " + self.pricehint
+        return print_price
+
     @property
     def description(self) -> str:
         description = self._find_text_in_class("aditem-main--middle--description")

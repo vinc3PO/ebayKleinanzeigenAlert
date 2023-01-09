@@ -83,17 +83,16 @@ def get_all_post(db: Session, telegram_message=False):
     if searches:
         for link_model in searches:
             # scrape search pages and add new/changed items to db
-            print("Processing link ID:{} --- searching {}, search term '{}', display price range: {} - {}".
-                  format(link_model.id, link_model.search_type, link_model.search_string,
-                         link_model.price_low, link_model.price_high))
+            print(f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
             post_factory = ebayclass.EbayItemFactory(link_model)
-            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list)
+            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=True)
             # filter which new/changed items are to be sent by Telegram
             if telegram_message:
                 for item in message_items:
                     price = re.findall(r'\d+', item.price)
+                    item_price = item.price
                     worth_messaging = False
-                    if len(price)>0:
+                    if len(price) > 0:
                         price = int(price[0])
                         # price value added
                         if price == 1:
@@ -101,8 +100,13 @@ def get_all_post(db: Session, telegram_message=False):
                         elif int(link_model.price_low) <= price <= int(link_model.price_high):
                             worth_messaging = True
                         elif int(link_model.price_high) < price <= round(int(link_model.price_high)*1.1) \
-                                and "VB" in item.price:
+                                and "VB" in item_price:
                             # price is negotiable and max 10% over watching price
+                            item.pricehint = f"(+10% from {link_model.price_high}€)"
+                            worth_messaging = True
+                        elif int(link_model.price_low)*0.7 > price:
+                            # price is 30% below watch price
+                            item.pricehint = f"(-30% from {link_model.price_low}€)"
                             worth_messaging = True
                     else:
                         # no price offered
