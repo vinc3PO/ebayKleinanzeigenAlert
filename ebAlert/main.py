@@ -1,5 +1,6 @@
 import re
 import sys
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 
@@ -28,7 +29,9 @@ def start():
     """
     loop through the urls in the database and send message
     """
-    print(">> Starting Ebay alert")
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print(">> Starting Ebay alert @", current_time)
     with get_session() as db:
         get_all_post(db=db, telegram_message=True)
     print("<< Ebay alert finished")
@@ -85,7 +88,7 @@ def get_all_post(db: Session, telegram_message=False):
             # scrape search pages and add new/changed items to db
             print(f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
             post_factory = ebayclass.EbayItemFactory(link_model)
-            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=True)
+            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=False)
             # filter which new/changed items are to be sent by Telegram
             if telegram_message:
                 for item in message_items:
