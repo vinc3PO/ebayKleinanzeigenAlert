@@ -90,7 +90,7 @@ class EbayItem:
 class EbayItemFactory:
     def __init__(self, link_model):
         self.item_list = []
-        npage_max = 3
+        npage_max = settings.MAX_PAGESTOSCRAPE
         npage_found = 1
         npage = 1
         while 0 < npage <= npage_max:
@@ -118,6 +118,8 @@ class EbayItemFactory:
         price = ""
         url = settings.URL_BASE
         if link_model.search_type == "GPU":
+            url += settings.URL_TYPE_GPU.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
+        elif link_model.search_type == "HIFI":
             url += settings.URL_TYPE_GPU.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
         print(url)
         return url
