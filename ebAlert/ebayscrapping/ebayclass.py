@@ -120,7 +120,7 @@ class EbayItemFactory:
         if link_model.search_type == "GPU":
             url += settings.URL_TYPE_GPU.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
         elif link_model.search_type == "HIFI":
-            url += settings.URL_TYPE_GPU.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
+            url += settings.URL_TYPE_HIFI.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
         print(url)
         return url
 
