@@ -90,54 +90,52 @@ def get_all_post(db: Session, telegram_message=False):
             print(
                 f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
             post_factory = ebayclass.EbayItemFactory(link_model)
-            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=False)
-            if telegram_message:
-                filter_message_items(link_model, message_items)
+            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=True)
+            filter_message_items(link_model, message_items, telegram_message=telegram_message)
 
 
-def filter_message_items(link_model, message_items):
+def filter_message_items(link_model, message_items, telegram_message):
     for item in message_items:
-        price = re.findall(r'\d+', item.price)
-        item_price = item.price
         worth_messaging = False
-        if len(price) > 0:
-            price = int(price[0])
-            # pricehint
-            pricerange= ""
-            if int(link_model.price_low) <= price <= int(link_model.price_high):
-                pricediff = int(link_model.price_high) - int(link_model.price_low)
-                pricepos = round((price - int(link_model.price_low))*10/pricediff)
-                for x in range(0, 10):
-                    if x == pricepos:
-                        pricerange += "X"
-                    else:
-                        pricerange += "."
-            else:
-                pricerange = "..."
-
-            pricerange = " [" + pricerange + "] "
-            # price value added
-            if price == 1:
-                item.pricerange = f"X < {link_model.price_low}€{pricerange}{link_model.price_high}€"
-                worth_messaging = True
-            elif int(link_model.price_low) <= price <= int(link_model.price_high):
-                item.pricerange = f"X < {link_model.price_low}€{pricerange}{link_model.price_high}€"
-                worth_messaging = True
-            elif int(link_model.price_high) < price <= round(int(link_model.price_high) * 1.1) \
-                    and "VB" in item_price:
-                # price is negotiable and max 10% over watching price
-                item.pricehint = f"(+10%)"
-                item.pricerange = f"{link_model.price_low}€{pricerange}{link_model.price_high}€ > X"
-                worth_messaging = True
-            elif int(link_model.price_low) * 0.7 <= price < int(link_model.price_low):
-                # price is 30% below watch price
-                item.pricehint = f"(-30%)"
-                item.pricerange = f"X < {link_model.price_low}€{pricerange}{link_model.price_high}€"
-                worth_messaging = True
+        # current price as integer
+        item_price = item.price
+        item_price_num = re.findall(r'\d+', item_price)
+        if len(item_price_num) == 0:
+            item_price_num = 0
         else:
-            # no price offered
+            item_price_num = int(item_price_num[0])
+        # pricerange visual indicator
+        pricerange= ""
+        if int(link_model.price_low) <= item_price_num <= int(link_model.price_high):
+            pricediff = int(link_model.price_high) - int(link_model.price_low)
+            pricepos = round((item_price_num - int(link_model.price_low))*10/pricediff)
+            for x in range(0, 11):
+                if x == pricepos:
+                    pricerange += "X"
+                else:
+                    pricerange += "."
+        else:
+            pricerange = "......."
+        pricerange = " [" + pricerange + "] "
+        item.pricerange = f"{link_model.price_low}€{pricerange}{link_model.price_high}€"
+        # price value added
+        if item_price_num <= 1:
+            # price is 0 or 1
             worth_messaging = True
-        if worth_messaging:
+        elif int(link_model.price_low) <= item_price_num <= int(link_model.price_high):
+            # price within range
+            worth_messaging = True
+        elif int(link_model.price_high) < item_price_num <= round(int(link_model.price_high) * 1.2) \
+                and "VB" in item_price:
+            # price is negotiable and max 20% over watching price
+            item.pricehint = f"(+20%)"
+            worth_messaging = True
+        elif int(link_model.price_low) * 0.7 <= item_price_num < int(link_model.price_low):
+            # price is 30% below watch price
+            item.pricehint = f"(-30%)"
+            worth_messaging = True
+        # send telegram
+        if worth_messaging and telegram_message:
             telegram.send_formated_message(item)
 
 
