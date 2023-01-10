@@ -1,6 +1,7 @@
 import re
 import sys
 from datetime import datetime
+from math import trunc
 
 from sqlalchemy.orm import Session
 
@@ -86,36 +87,58 @@ def get_all_post(db: Session, telegram_message=False):
     if searches:
         for link_model in searches:
             # scrape search pages and add new/changed items to db
-            print(f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
+            print(
+                f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
             post_factory = ebayclass.EbayItemFactory(link_model)
             message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=False)
-            # filter which new/changed items are to be sent by Telegram
             if telegram_message:
-                for item in message_items:
-                    price = re.findall(r'\d+', item.price)
-                    item_price = item.price
-                    worth_messaging = False
-                    if len(price) > 0:
-                        price = int(price[0])
-                        # price value added
-                        if price == 1:
-                            worth_messaging = True
-                        elif int(link_model.price_low) <= price <= int(link_model.price_high):
-                            worth_messaging = True
-                        elif int(link_model.price_high) < price <= round(int(link_model.price_high)*1.1) \
-                                and "VB" in item_price:
-                            # price is negotiable and max 10% over watching price
-                            item.pricehint = f"(+10% from {link_model.price_high}€)"
-                            worth_messaging = True
-                        elif int(link_model.price_low)*0.7 <= price < int(link_model.price_low):
-                            # price is 30% below watch price
-                            item.pricehint = f"(-30% from {link_model.price_low}€)"
-                            worth_messaging = True
+                filter_message_items(link_model, message_items)
+
+
+def filter_message_items(link_model, message_items):
+    for item in message_items:
+        price = re.findall(r'\d+', item.price)
+        item_price = item.price
+        worth_messaging = False
+        if len(price) > 0:
+            price = int(price[0])
+            # pricehint
+            pricerange= ""
+            if int(link_model.price_low) <= price <= int(link_model.price_high):
+                pricediff = int(link_model.price_high) - int(link_model.price_low)
+                pricepos = round((price - int(link_model.price_low))*10/pricediff)
+                for x in range(0, 10):
+                    if x == pricepos:
+                        pricerange += "X"
                     else:
-                        # no price offered
-                        worth_messaging = True
-                    if worth_messaging:
-                        telegram.send_formated_message(item)
+                        pricerange += "."
+            else:
+                pricerange = "..."
+
+            pricerange = " [" + pricerange + "] "
+            # price value added
+            if price == 1:
+                item.pricerange = f"X < {link_model.price_low}€{pricerange}{link_model.price_high}€"
+                worth_messaging = True
+            elif int(link_model.price_low) <= price <= int(link_model.price_high):
+                item.pricerange = f"X < {link_model.price_low}€{pricerange}{link_model.price_high}€"
+                worth_messaging = True
+            elif int(link_model.price_high) < price <= round(int(link_model.price_high) * 1.1) \
+                    and "VB" in item_price:
+                # price is negotiable and max 10% over watching price
+                item.pricehint = f"(+10%)"
+                item.pricerange = f"{link_model.price_low}€{pricerange}{link_model.price_high}€ > X"
+                worth_messaging = True
+            elif int(link_model.price_low) * 0.7 <= price < int(link_model.price_low):
+                # price is 30% below watch price
+                item.pricehint = f"(-30%)"
+                item.pricerange = f"X < {link_model.price_low}€{pricerange}{link_model.price_high}€"
+                worth_messaging = True
+        else:
+            # no price offered
+            worth_messaging = True
+        if worth_messaging:
+            telegram.send_formated_message(item)
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ class EbayItem:
         self.contents = contents
         self.old_price = ""
         self.pricehint = ""
+        self.pricerange = ""
         self._city = None
         self._distance = None
         self._extract_city_distance()
@@ -49,6 +50,7 @@ class EbayItem:
             print_price = "NEW:" + self.old_price + " --> " + print_price
         if self.pricehint != "":
             print_price += " " + self.pricehint
+        print_price += "\n" + self.pricerange
         return print_price
 
     @property
