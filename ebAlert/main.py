@@ -90,7 +90,7 @@ def get_all_post(db: Session, telegram_message=False):
             print(
                 f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
             post_factory = ebayclass.EbayItemFactory(link_model)
-            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=True)
+            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=False)
             filter_message_items(link_model, message_items, telegram_message=telegram_message)
 
 
