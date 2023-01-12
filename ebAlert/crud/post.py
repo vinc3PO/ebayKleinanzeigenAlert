@@ -21,9 +21,16 @@ class CRUDPost(CRUBBase):
                     self.create({"post_id": str(item.id), "price": item.price, "link_id": link_id}, db=db)
                 new_items.append(item)
             else:
+                # transition to saving link id in offers
+                if str(getattr(db_result, "link_id")) == "":
+                    print("c", end='')
+                    if not simulate:
+                        self.update({"post_id": str(item.id), "link_id": link_id}, db=db)
+                    item.old_price = old_price
+                    new_items.append(item)
+                # there was a different price before, update it and inform
                 old_price = str(getattr(db_result, "price"))
                 if old_price != item.price:
-                    # there was a different price before, update it and inform
                     print("C", end='')
                     if not simulate:
                         self.update({"post_id": str(item.id), "price": item.price}, db=db)
