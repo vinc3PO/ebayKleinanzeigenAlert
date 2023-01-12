@@ -14,7 +14,7 @@ class EbayPost(Base):
     title = Column(String)
     price = Column(String)
     post_id = Column(Integer)
-    link = Column(String)
+    link_id = Column(Integer)
     date = Column(DateTime(timezone=True), server_default=func.now())
 
 

@@ -9,7 +9,7 @@ from ebAlert.models.sqlmodel import EbayPost
 
 class CRUDPost(CRUBBase):
 
-    def add_items_to_db(self, items: List[EbayItem], db: Session, simulate=False) -> List[EbayItem]:
+    def add_items_to_db(self, items: List[EbayItem], db: Session, link_id: int, simulate=False) -> List[EbayItem]:
         new_items = []
         print("Working:", end=' ')
         for item in items:
@@ -18,7 +18,7 @@ class CRUDPost(CRUBBase):
                 # new article
                 print("C", end='')
                 if not simulate:
-                    self.create({"post_id": str(item.id), "price": item.price}, db=db)
+                    self.create({"post_id": str(item.id), "price": item.price, "link_id": link_id}, db=db)
                 new_items.append(item)
             else:
                 old_price = str(getattr(db_result, "price"))

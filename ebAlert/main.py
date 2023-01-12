@@ -73,8 +73,10 @@ def links(show, remove, clear, url, init):
                 print("<< Link already exists")
             else:
                 crud_link.create({"link": url}, db)
+                new_link_id = 0
                 ebay_items = ebayclass.EbayItemFactory(url)
-                crud_post.add_items_to_db(db, ebay_items.item_list)
+                # TODO here link ids for new_link_id missing ...
+                crud_post.add_items_to_db(db, ebay_items.item_list, new_link_id)
                 print("<< Link and post added to the database")
         elif init:
             print(">> Initializing database")
@@ -90,7 +92,7 @@ def get_all_post(db: Session, telegram_message=False):
             print(
                 f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
             post_factory = ebayclass.EbayItemFactory(link_model)
-            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, simulate=False)
+            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
             filter_message_items(link_model, message_items, telegram_message=telegram_message)
 
 
@@ -118,16 +120,21 @@ def filter_message_items(link_model, message_items, telegram_message):
             pricerange = "......."
         pricerange = " [" + pricerange + "] "
         item.pricerange = f"{link_model.price_low}€{pricerange}{link_model.price_high}€"
-        # price value added
+        # TODO hardcoded flag here and both over and underrange hints
+        # maximal item price to be shown
+        price_max = round(int(link_model.price_high) * 1.2)
+        if (price_max - link_model.price_high) > 20:
+            price_max = link_model.price_high + 20
+        # CHECK if message worth sending
         if item_price_num <= 1:
             # price is 0 or 1
             worth_messaging = True
         elif int(link_model.price_low) <= item_price_num <= int(link_model.price_high):
             # price within range
             worth_messaging = True
-        elif int(link_model.price_high) < item_price_num <= round(int(link_model.price_high) * 1.2) \
+        elif int(link_model.price_high) < item_price_num <= price_max \
                 and "VB" in item_price:
-            # price is negotiable and max 20% over watching price
+            # price is negotiable and max 20% over watching price max 20€
             item.pricehint = f"(+20%)"
             worth_messaging = True
         elif int(link_model.price_low) * 0.7 <= item_price_num < int(link_model.price_low):
@@ -137,6 +144,15 @@ def filter_message_items(link_model, message_items, telegram_message):
         # send telegram
         if worth_messaging and telegram_message:
             telegram.send_formated_message(item)
+
+"""
+IDEAS:
+prepare vor search only having max price for example
+make searches go to individual chat ids
+make db much more detailed: product categories + filters prepare URLs and are referenced by serach_type
+
+MAYBE: react to a telegram message marks the item as favored in ebay and sends the seller a text?
+"""
 
 
 if __name__ == "__main__":
