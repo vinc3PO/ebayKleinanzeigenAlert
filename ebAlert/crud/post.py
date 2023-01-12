@@ -1,6 +1,7 @@
 from typing import List
 
 from sqlalchemy.orm import Session
+from sqlalchemy.util import NoneType
 
 from ebAlert.crud.base import CRUBBase
 from ebAlert.ebayscrapping.ebayclass import EbayItem
@@ -22,18 +23,16 @@ class CRUDPost(CRUBBase):
                 new_items.append(item)
             else:
                 # transition to saving link id in offers
-                if str(getattr(db_result, "link_id")) == "":
-                    print("c", end='')
+                if type(getattr(db_result, "link_id")) is NoneType:
+                    print("u", end=' ')
                     if not simulate:
-                        self.update({"post_id": str(item.id), "link_id": link_id}, db=db)
-                    item.old_price = old_price
-                    new_items.append(item)
+                        self.update({"identifier": "post_id", "post_id": item.id, "link_id": link_id}, db=db)
                 # there was a different price before, update it and inform
                 old_price = str(getattr(db_result, "price"))
                 if old_price != item.price:
-                    print("C", end='')
+                    print("U", end=' ')
                     if not simulate:
-                        self.update({"post_id": str(item.id), "price": item.price}, db=db)
+                        self.update({"identifier": "post_id", "post_id": item.id, "price": item.price}, db=db)
                     item.old_price = old_price
                     new_items.append(item)
         print(" ... OK")

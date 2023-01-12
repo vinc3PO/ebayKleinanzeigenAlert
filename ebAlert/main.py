@@ -88,12 +88,13 @@ def get_all_post(db: Session, telegram_message=False):
     searches = crud_link.get_all(db=db)
     if searches:
         for link_model in searches:
-            # scrape search pages and add new/changed items to db
-            print(
-                f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
-            post_factory = ebayclass.EbayItemFactory(link_model)
-            message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
-            filter_message_items(link_model, message_items, telegram_message=telegram_message)
+            if link_model.status != 0:
+                # scrape search pages and add new/changed items to db
+                print(f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
+                post_factory = ebayclass.EbayItemFactory(link_model)
+                message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
+                if link_model.status == 1:
+                    filter_message_items(link_model, message_items, telegram_message=telegram_message)
 
 
 def filter_message_items(link_model, message_items, telegram_message):

@@ -54,12 +54,17 @@ class CRUBBase:
         return item
 
     def update(self, items: Dict[str, Any], db: Session) -> Optional[Model]:
+        identifier = items.get("identifier")
         clean_dict = self._get_clean_dict(items)
         if not clean_dict:
             return
         item = self.model(**clean_dict)
-        db.query(self.model).filter(self.model.post_id == item.post_id).update({'price': item.price})
-        db.commit()
+        for x in items:
+            if x != "identifier":
+                db.query(self.model)\
+                    .filter(getattr(self.model, identifier) == getattr(item, identifier))\
+                    .update({x: getattr(item, x)})
+                db.commit()
         return item
 
     def remove(self, id: int, db: Session) -> Optional[bool]:
