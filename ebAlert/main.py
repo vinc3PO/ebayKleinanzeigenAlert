@@ -89,11 +89,18 @@ def get_all_post(db: Session, telegram_message=False):
     if searches:
         for link_model in searches:
             if link_model.status != 0:
+                """
+                every search has a status
+                0 = serach disabled
+                1 = search active. update db and send messages
+                2 = search silent = update db but do not send messages
+                """
                 # scrape search pages and add new/changed items to db
                 print(f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
                 post_factory = ebayclass.EbayItemFactory(link_model)
                 message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
                 if link_model.status == 1:
+                    # check for
                     filter_message_items(link_model, message_items, telegram_message=telegram_message)
 
 
@@ -102,7 +109,7 @@ def filter_message_items(link_model, message_items, telegram_message):
         worth_messaging = False
         # current price as integer
         item_price = item.price
-        item_price_num = re.findall(r'\d+', item_price)
+        item_price_num = re.findall(r'\d+', re.sub("\.", "", item_price))
         if len(item_price_num) == 0:
             item_price_num = 0
         else:
