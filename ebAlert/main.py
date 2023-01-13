@@ -96,15 +96,19 @@ def get_all_post(db: Session, telegram_message=False):
                 2 = search silent = update db but do not send messages
                 """
                 # scrape search pages and add new/changed items to db
-                print(f'Processing link ID:{link_model.id} --- searching {link_model.search_type}, search term \'{link_model.search_string}\', display price range: {link_model.price_low} - {link_model.price_high}')
+                print(f'Searching ID:{link_model.id}: Type \'{link_model.search_type}\', filter \'{link_model.search_string}\', range: {link_model.price_low}€ - {link_model.price_high}€', end=' ')
                 post_factory = ebayclass.EbayItemFactory(link_model)
                 message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
                 if link_model.status == 1:
-                    # check for
+                    # check for items worth sending and send
                     filter_message_items(link_model, message_items, telegram_message=telegram_message)
+                else:
+                    # end output
+                    print('')
 
 
 def filter_message_items(link_model, message_items, telegram_message):
+    print(' Worth sending:', end=' ')
     for item in message_items:
         worth_messaging = False
         # current price as integer
@@ -137,22 +141,26 @@ def filter_message_items(link_model, message_items, telegram_message):
         if item_price_num <= 1:
             # price is 0 or 1
             worth_messaging = True
+            print('V', end='')
         elif int(link_model.price_low) <= item_price_num <= int(link_model.price_high):
             # price within range
             worth_messaging = True
+            print('!', end='')
         elif int(link_model.price_high) < item_price_num <= price_max \
                 and "VB" in item_price:
             # price is negotiable and max 20% over watching price max 20€
             item.pricehint = f"(+20%)"
             worth_messaging = True
+            print('h', end='')
         elif int(link_model.price_low) * 0.7 <= item_price_num < int(link_model.price_low):
             # price is 30% below watch price
             item.pricehint = f"(-30%)"
             worth_messaging = True
+            print('l', end='')
         # send telegram
         if worth_messaging and telegram_message:
             telegram.send_formated_message(item)
-
+    print('')
 """
 IDEAS:
 prepare vor search only having max price for example

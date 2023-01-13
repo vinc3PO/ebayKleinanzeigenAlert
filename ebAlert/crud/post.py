@@ -12,7 +12,7 @@ class CRUDPost(CRUBBase):
 
     def add_items_to_db(self, items: List[EbayItem], db: Session, link_id: int, simulate=False) -> List[EbayItem]:
         new_items = []
-        print("Working on " + str(len(items)) + " items: ", end=' ')
+        print(f'Found {str(len(items))}:', end=' ')
         for item in items:
             db_result = self.get_by_key({"post_id": str(item.id)}, db)
             if not db_result:
@@ -35,7 +35,7 @@ class CRUDPost(CRUBBase):
                         self.update({"identifier": "post_id", "post_id": item.id, "price": item.price}, db=db)
                     item.old_price = old_price
                     new_items.append(item)
-        print(" DONE.")
+        print('', end=' ')
         return new_items
 
 

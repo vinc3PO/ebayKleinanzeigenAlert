@@ -123,6 +123,7 @@ class EbayItemFactory:
         # currently price is not considered in getting the results, articles are filtered later
         price = ""
         url = settings.URL_BASE
+        # TODO next tep: make this dynamic so only config file needs change when new types are added
         if link_model.search_type == "GPU":
             url += settings.URL_TYPE_GPU.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
         elif link_model.search_type == "HIFI":
