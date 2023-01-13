@@ -96,7 +96,7 @@ def get_all_post(db: Session, telegram_message=False):
                 2 = search silent = update db but do not send messages
                 """
                 # scrape search pages and add new/changed items to db
-                print(f'Searching ID:{link_model.id}: Type \'{link_model.search_type}\', filter \'{link_model.search_string}\', range: {link_model.price_low}€ - {link_model.price_high}€', end=' ')
+                print(f'Searching ID:{link_model.id}: Type \'{link_model.search_type}\', filter \'{link_model.search_string}\', range: {link_model.price_low}€ - {link_model.price_high}€')
                 post_factory = ebayclass.EbayItemFactory(link_model)
                 message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
                 if link_model.status == 1:
@@ -104,11 +104,11 @@ def get_all_post(db: Session, telegram_message=False):
                     filter_message_items(link_model, message_items, telegram_message=telegram_message)
                 else:
                     # end output
-                    print('')
+                    print('NO Telegram')
 
 
 def filter_message_items(link_model, message_items, telegram_message):
-    print(' Worth sending:', end=' ')
+    print('Telegram:', end=' ')
     for item in message_items:
         worth_messaging = False
         # current price as integer
