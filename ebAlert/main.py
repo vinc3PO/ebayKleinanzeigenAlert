@@ -91,7 +91,7 @@ def get_all_post(db: Session, telegram_message=False):
             if link_model.status != 0:
                 """
                 every search has a status
-                0 = serach disabled
+                0 = search disabled
                 1 = search active. update db and send messages
                 2 = search silent = update db but do not send messages
                 """
@@ -101,10 +101,13 @@ def get_all_post(db: Session, telegram_message=False):
                 message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
                 if link_model.status == 1:
                     # check for items worth sending and send
-                    filter_message_items(link_model, message_items, telegram_message=telegram_message)
+                    if len(message_items) > 0:
+                        filter_message_items(link_model, message_items, telegram_message=telegram_message)
+                    else:
+                        print('Nothing to report')
                 else:
                     # end output
-                    print('NO Telegram')
+                    print('Silent')
 
 
 def filter_message_items(link_model, message_items, telegram_message):

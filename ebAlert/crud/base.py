@@ -32,7 +32,7 @@ class CRUBBase:
         self.model = model
 
     def get_all(self, db: Session) -> Optional[List[Model]]:
-        results = db.execute(select(self.model)).scalars().all()
+        results = db.execute(select(self.model).order_by(self.model.price_low.desc())).scalars().all()
         return results
 
     def get_by_key(self, key_mapping: Dict[str, str], db: Session) -> Optional[Model]:
