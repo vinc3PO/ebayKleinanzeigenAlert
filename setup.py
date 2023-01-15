@@ -5,10 +5,13 @@ setup(
     version='1.3',
     packages=find_packages(),
     install_requires=[
-        'click>=7.1',
-        'requests>=2.23',
-        'bs4>=0.0.1',
-        'sqlalchemy>=1.4'
+        'click~=8.1.3'
+        'SQLAlchemy~=1.4.46'
+        'bs4~=0.0.1'
+        'beautifulsoup4~=4.11.1'
+        'geopy~=2.3.0'
+        'requests~=2.28.1'
+        'setuptools~=65.5.1'
     ],
     entry_points={'console_scripts': 'ebAlert=ebAlert.main:cli'}
 )

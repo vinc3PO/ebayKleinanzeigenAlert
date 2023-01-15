@@ -24,7 +24,7 @@ class SendingClass:
             return response.json()["ok"]
 
     def send_formated_message(self, item: EbayItem):
-        message = f"{settings.SOURCE_INDICATOR}{item.title}\n\n{item.print_price}\n\n{item.shipping}\n({item.city})\n\n"
+        message = f"{settings.SOURCE_INDICATOR}{item.title}\n\n{item.print_price}\n\n{item.shipping}\n({item.location})\n\n"
         url = f'<a href="{item.link}">{item.link}</a>'
         self.send_message(message + url)
 

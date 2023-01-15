@@ -1,9 +1,12 @@
 import re
 import sys
 from datetime import datetime
-from math import trunc
 
 from sqlalchemy.orm import Session
+from sqlalchemy.util import NoneType
+
+from geopy.geocoders import Nominatim
+from geopy import distance
 
 from ebAlert import create_logger
 from ebAlert.crud.base import crud_link, get_session
@@ -98,7 +101,7 @@ def get_all_post(db: Session, telegram_message=False):
                 # scrape search pages and add new/changed items to db
                 print(f'Searching ID:{link_model.id}: Type \'{link_model.search_type}\', filter \'{link_model.search_string}\', range: {link_model.price_low}€ - {link_model.price_high}€')
                 post_factory = ebayclass.EbayItemFactory(link_model)
-                message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=False)
+                message_items = crud_post.add_items_to_db(db=db, items=post_factory.item_list, link_id=link_model.id, simulate=True)
                 if link_model.status == 1:
                     # check for items worth sending and send
                     if len(message_items) > 0:
@@ -111,6 +114,9 @@ def get_all_post(db: Session, telegram_message=False):
 
 
 def filter_message_items(link_model, message_items, telegram_message):
+    if type(link_model.zipcodes) != NoneType:
+        max_distance = int(link_model.zipcodes.split(',')[0])
+        print(f"Show only local offers within: {max_distance}km")
     print('Telegram:', end=' ')
     for item in message_items:
         worth_messaging = False
@@ -160,6 +166,28 @@ def filter_message_items(link_model, message_items, telegram_message):
             item.pricehint = f"(-30%)"
             worth_messaging = True
             print('l', end='')
+            # calculate distance
+        if type(link_model.zipcodes) != NoneType and worth_messaging and item.shipping == "No Shipping":
+            zipcodes = link_model.zipcodes.split(',')
+            max_distance = int(zipcodes[0])
+            geocoder = Nominatim(user_agent="cyberpete2244/ebayKleinanzeigenAlert")
+            locationzip = re.findall(r'\d+', item.location)
+            geoloc_item = geocoder.geocode(locationzip)
+            n = 1
+            item_inrange = False
+            while n < len(zipcodes):
+                geoloc_filter = geocoder.geocode(zipcodes[n])
+                itemdistance = round(distance.distance((geoloc_item.latitude, geoloc_item.longitude),(geoloc_filter.latitude, geoloc_filter.longitude)).km)
+                if itemdistance <= max_distance:
+                    item_inrange = True
+                    n = len(zipcodes)
+                else:
+                    n += 1
+            if item_inrange:
+                print('+', end='')
+            else:
+                worth_messaging = False
+                print('-', end='')
         # send telegram
         if worth_messaging and telegram_message:
             telegram.send_formated_message(item)

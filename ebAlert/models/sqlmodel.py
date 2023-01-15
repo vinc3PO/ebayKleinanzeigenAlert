@@ -27,6 +27,7 @@ class EbayLink(Base):
     search_string = Column(String)
     price_low = Column(Integer)
     price_high = Column(Integer)
+    zipcodes = Column(String)
 
 
 Base.metadata.create_all(engine)

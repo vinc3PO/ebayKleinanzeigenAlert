@@ -20,9 +20,7 @@ class EbayItem:
         self.old_price = ""
         self.pricehint = ""
         self.pricerange = ""
-        self._city = None
-        self._distance = None
-        self._extract_city_distance()
+        self.distance = ""
 
     @property
     def link(self) -> str:
@@ -33,7 +31,10 @@ class EbayItem:
 
     @property
     def shipping(self) -> str:
-        return self._find_text_in_class("aditem-main--middle--price-shipping--shipping") or "No Shipping"
+        if self.distance == "":
+            return self._find_text_in_class("aditem-main--middle--price-shipping--shipping") or "No Shipping"
+        else:
+            return self.distance
 
     @property
     def title(self) -> str:
@@ -66,12 +67,8 @@ class EbayItem:
         return int(self.contents.get('data-adid')) or 0
 
     @property
-    def city(self):
-        return self._city or "No city"
-
-    @property
-    def distance(self):
-        return self._distance
+    def location(self):
+        return self._find_text_in_class("aditem-main--top--left") or "No location"
 
     def __repr__(self):
         return '{}; {}; {}'.format(self.title, self.city, self.price)
@@ -80,17 +77,6 @@ class EbayItem:
         found = self.contents.find(attrs={"class": f"{class_name}"})
         if found:
             return found.text.strip()
-
-    def _extract_city_distance(self):
-        details_list = self._find_text_in_class("aditem-main--top--left")
-        if details_list:
-            split_detail = details_list.split("\n")
-            if len(split_detail) == 1:
-                self._city = split_detail[0]
-            else:
-                split_detail = [detail.strip() for detail in split_detail]
-                self._city = split_detail[0]
-                self._distance = split_detail[1]
 
 
 class EbayItemFactory:
@@ -115,20 +101,17 @@ class EbayItemFactory:
 
     @staticmethod
     def generate_url(link_model, npage=1) -> str:
-        # generate url from DB using URL placeholders: {PRICE} {NPAGE} {SEARCH_TERM}
+        # generate url from DB using URL placeholders: {NPAGE} {SEARCH_TERM}
         current_page = ""
         if npage > 1:
             current_page = "seite:" + str(npage) + "/"
-        search_term = link_model.search_string.replace(" ", "-") + "/"
+        search_term = ""
+        if link_model.search_string != "":
+            search_term = link_model.search_string.replace(" ", "-") + "/"
         # currently price is not considered in getting the results, articles are filtered later
-        price = ""
         url = settings.URL_BASE
-        # TODO next tep: make this dynamic so only config file needs change when new types are added
-        if link_model.search_type == "GPU":
-            url += settings.URL_TYPE_GPU.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
-        elif link_model.search_type == "HIFI":
-            url += settings.URL_TYPE_HIFI.format(SEARCH_TERM=search_term, NPAGE=current_page, PRICE=price)
-        # print(url)
+        url += getattr(settings, "URL_TYPE_"+link_model.search_type).format(SEARCH_TERM=search_term, NPAGE=current_page)
+        print(url)
         return url
 
     @staticmethod
