@@ -1,3 +1,4 @@
+import re
 from typing import Generator
 
 import requests
@@ -99,6 +100,6 @@ class EbayItemFactory:
         soup = BeautifulSoup(cleaned_response, "html.parser")
         result = soup.find(attrs={"id": "srchrslt-adtable"})
         if result:
-            for item in result.find_all(attrs={"class": "ad-listitem lazyload-item"}):
+            for item in result.find_all(attrs={"class": re.compile("ad-listitem.*")}):
                 if item.article:
                     yield item.article
