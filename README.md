@@ -49,6 +49,9 @@ No API required - Only URL of the query.
 * click, requests, bs4 and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
 
 ## ChangeLog
+1.2 -> 1.4
+* Fix change in Ebay class naming
+
  1.1 -> 1.2
 * No price fix (dandud100)
 * Updated Readme (nilsreichardt)
