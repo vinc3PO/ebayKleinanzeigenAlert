@@ -16,7 +16,7 @@ def test_ebay_item():
         article = soup.find("article")
         item = EbayItem(article)
         print(item)
-        assert item.link == 'https://www.ebay-kleinanzeigen.de/s-anzeige/suche-alte-spiele-nintendo-gameboy-sega-playstation-c64-amiga-pc/2469197759-227-8256'
+        assert item.link == 'https://www.kleinanzeigen.de/s-anzeige/suche-alte-spiele-nintendo-gameboy-sega-playstation-c64-amiga-pc/2469197759-227-8256'
         assert item.id == 2469197759
         assert item.title == 'Suche alte Spiele:Nintendo-GameBoy-Sega-Playstation-C64-Amiga-PC'
         assert item.price == '1.234 € VB'
