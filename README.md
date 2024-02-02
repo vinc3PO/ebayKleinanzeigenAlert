@@ -49,6 +49,10 @@ No API required - Only URL of the query.
 * click, requests, bs4 and sqlalchemy (arguably sqlalchemy is a little overkill for that purpose)
 
 ## ChangeLog
+1.4 -> 1.5
+* Update Requirement for requests
+* Change Domain Name
+
 1.2 -> 1.4
 * Fix change in Ebay class naming
 
