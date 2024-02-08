@@ -9,7 +9,8 @@ setup(
         'requests>=2.31',
         'bs4>=0.0.1',
         'sqlalchemy>=1.4',
-        'urllib3>=2.2.0'
+        'urllib3>=2.2.0',
+        'selenium'
     ],
     entry_points={'console_scripts': 'ebAlert=ebAlert.main:cli'}
 )
